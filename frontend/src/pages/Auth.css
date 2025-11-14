@@ -111,3 +111,81 @@
   color: #2980b9;
   text-decoration: underline;
 }
+
+/* Test Accounts Styles */
+.test-accounts {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #ecf0f1;
+}
+
+.test-accounts-title {
+  text-align: center;
+  color: #2c3e50;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  font-size: 0.95rem;
+}
+
+.test-accounts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.test-account {
+  position: relative;
+}
+
+.test-account-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border: 2px solid #bdc3c7;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.test-account-btn:hover {
+  border-color: #3498db;
+  background: linear-gradient(135deg, #e8f4f8 0%, #b3dce8 100%);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+  transform: translateY(-2px);
+}
+
+.test-account-btn:active {
+  transform: translateY(0);
+}
+
+.account-role {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.25rem;
+}
+
+.account-email {
+  color: #7f8c8d;
+  font-size: 0.8rem;
+}
+
+.account-password {
+  color: #95a5a6;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.test-accounts-info {
+  text-align: center;
+  color: #95a5a6;
+  font-size: 0.75rem;
+  margin: 0;
+  font-style: italic;
+}
+

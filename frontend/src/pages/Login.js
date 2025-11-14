@@ -77,6 +77,61 @@ const Login = () => {
           <span>Não tem conta? </span>
           <Link to="/register">Registre-se aqui</Link>
         </div>
+
+        {/* Test Accounts */}
+        <div className="test-accounts">
+          <p className="test-accounts-title">🧪 Contas de Teste</p>
+          <div className="test-accounts-list">
+            <div className="test-account">
+              <button
+                type="button"
+                className="test-account-btn"
+                onClick={() => {
+                  setEmail('admin@test.com');
+                  setSenha('Senha123!');
+                  setError('');
+                }}
+              >
+                <span className="account-role">🔐 Admin</span>
+                <span className="account-email">admin@test.com</span>
+                <span className="account-password">Senha123!</span>
+              </button>
+            </div>
+
+            <div className="test-account">
+              <button
+                type="button"
+                className="test-account-btn"
+                onClick={() => {
+                  setEmail('jogador@test.com');
+                  setSenha('Senha123!');
+                  setError('');
+                }}
+              >
+                <span className="account-role">🎯 Jogador</span>
+                <span className="account-email">jogador@test.com</span>
+                <span className="account-password">Senha123!</span>
+              </button>
+            </div>
+
+            <div className="test-account">
+              <button
+                type="button"
+                className="test-account-btn"
+                onClick={() => {
+                  setEmail('organizador@test.com');
+                  setSenha('Senha123!');
+                  setError('');
+                }}
+              >
+                <span className="account-role">📋 Organizador</span>
+                <span className="account-email">organizador@test.com</span>
+                <span className="account-password">Senha123!</span>
+              </button>
+            </div>
+          </div>
+          <p className="test-accounts-info">Clique em uma conta para preenchê-la automaticamente</p>
+        </div>
       </div>
     </div>
   );
