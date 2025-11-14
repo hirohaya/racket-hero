@@ -6,7 +6,7 @@
 
 ```powershell
 cd C:\Users\hiros\OneDrive\Documents\projetos\racket-hero
-.\start-all-parallel.ps1
+.\scripts\start-all-parallel.ps1
 ```
 
 **Resultado:**
@@ -41,12 +41,12 @@ Remove-Job -Name "RacketHero-*"
 
 **Backend apenas:**
 ```powershell
-.\start-backend.ps1
+.\scripts\start-backend.ps1
 ```
 
 **Frontend apenas (desenvolvimento):**
 ```powershell
-.\start-frontend-dev.ps1
+.\scripts\start-frontend-dev.ps1
 ```
 
 ---
@@ -86,15 +86,15 @@ Remove-Job -Name "RacketHero-*"
 
 ---
 
-## 📚 Estrutura de Scripts
+### 📚 Estrutura de Scripts
 
 | Script | Função |
 |--------|--------|
-| `start-all-parallel.ps1` | **Inicia backend e frontend juntos** |
-| `start-backend.ps1` | Inicia só backend |
-| `start-frontend-dev.ps1` | Inicia só frontend (desenvolvimento) |
-| `start-frontend.ps1` | Build + serve frontend |
-| `start-all.ps1` | Inicia em janelas separadas |
+| `scripts/start-all-parallel.ps1` | **Inicia backend e frontend juntos** |
+| `scripts/start-backend.ps1` | Inicia só backend |
+| `scripts/start-frontend-dev.ps1` | Inicia só frontend (desenvolvimento) |
+| `scripts/start-frontend.ps1` | Build + serve frontend |
+| `scripts/start-all.ps1` | Inicia em janelas separadas |
 
 ---
 
@@ -146,7 +146,7 @@ Get-Job | Remove-Job
 **Tudo funcionando? 🎉 Basta rodar:**
 
 ```powershell
-.\start-all-parallel.ps1
+.\scripts\start-all-parallel.ps1
 ```
 
 E acessar http://localhost:3000

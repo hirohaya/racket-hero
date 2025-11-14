@@ -21,6 +21,22 @@ Plataforma de gerenciamento de eventos de tênis de mesa com suporte a diferente
 
 ### 🚀 Quick Start
 
+#### Forma Mais Rápida (Windows PowerShell)
+
+```powershell
+cd C:\Users\hiros\OneDrive\Documents\projetos\racket-hero
+.\scripts\start-all-parallel.ps1
+```
+
+Ambos rodando:
+- **Backend**: http://127.0.0.1:8000
+- **Frontend**: http://localhost:3000
+- **Docs**: http://127.0.0.1:8000/docs
+
+Veja `COMO_INICIAR.md` para mais opções de inicialização.
+
+---
+
 #### Backend
 
 ```bash
