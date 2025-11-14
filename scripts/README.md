@@ -1,89 +1,80 @@
 # 📁 Scripts do Racket Hero
 
-Pasta com scripts PowerShell para inicializar o backend e frontend.
+Pasta com scripts PowerShell para inicializar o backend e frontend em terminais separados.
 
 ## 🚀 Uso Rápido
 
 ```powershell
-# Iniciar tudo (backend + frontend)
-.\start-all-parallel.ps1
+# Iniciar tudo (backend + frontend em terminais separados)
+.\start-all-new.ps1
 ```
 
 ## 📋 Scripts Disponíveis
 
-### 1. `start-all-parallel.ps1` ⭐ **RECOMENDADO**
-Inicia backend e frontend em paralelo como jobs do PowerShell.
+### 1. `start-all-new.ps1` ⭐ **RECOMENDADO**
+Inicia backend e frontend em terminais separados (foreground).
+- Cada servidor roda em seu próprio terminal
+- Você vê os logs em tempo real
+- Sem jobs em background
 
 ```powershell
-.\start-all-parallel.ps1
+.\start-all-new.ps1
 ```
 
 **Resultado:**
-- Backend: http://127.0.0.1:8000
-- Frontend: http://localhost:3000
+- Backend: http://127.0.0.1:8000 (Terminal 1)
+- Frontend: http://localhost:3000 (Terminal 2)
 
-### 2. `start-all.ps1`
-Inicia backend e frontend em janelas/abas separadas.
-
-```powershell
-.\start-all.ps1
-```
-
-### 3. `start-backend.ps1`
-Inicia apenas o servidor FastAPI.
+### 2. `start-backend.ps1`
+Abre o backend em um novo terminal (foreground).
 
 ```powershell
 .\start-backend.ps1
 ```
 
-### 4. `start-frontend-dev.ps1`
-Inicia apenas o frontend em modo desenvolvimento (com hot reload).
+### 3. `start-frontend-dev.ps1`
+Abre o frontend em um novo terminal em modo desenvolvimento (foreground).
 
 ```powershell
 .\start-frontend-dev.ps1
 ```
 
-### 5. `start-frontend.ps1`
-Faz build e serve o frontend em modo produção.
+### ⚠️ Scripts Antigos (não recomendados)
 
-```powershell
-.\start-frontend.ps1
-```
+#### `start-all-parallel.ps1`
+Inicia em paralelo como jobs (background) - pode causar conflitos de porta.
+
+#### `start-all.ps1`
+Alternativa antiga de terminais separados.
+
+#### `start-frontend.ps1`
+Build + serve em modo produção.
 
 ## 📖 Documentação Completa
 
-Veja `SCRIPTS.md` para documentação detalhada, comandos úteis e troubleshooting.
+Veja `SCRIPTS.md` para documentação detalhada, troubleshooting e comandos úteis.
 
-## 💡 Gerenciar Jobs (PowerShell)
+## 💡 Acompanhar os servidores
 
-```powershell
-# Ver status dos jobs
-Get-Job
-
-# Ver logs do backend
-Receive-Job -Name "RacketHero-Backend" -Keep
-
-# Ver logs do frontend
-Receive-Job -Name "RacketHero-Frontend" -Keep
-
-# Parar um job
-Stop-Job -Name "RacketHero-Backend"
-
-# Parar tudo
-Stop-Job -Name "RacketHero-*"
-
-# Limpar jobs
-Get-Job | Remove-Job
-```
+Cada servidor roda em seu próprio terminal, você vê todos os logs em tempo real!
 
 ## ⚙️ Se der problema
+
+### Verificar se servidores estão rodando
+```powershell
+# Checar porta 8000 (backend)
+netstat -ano | findstr ":8000.*LISTENING"
+
+# Checar porta 3000 (frontend)
+netstat -ano | findstr ":3000.*LISTENING"
+```
 
 ### Portas já em uso
 ```powershell
 # Encontrar processo na porta 8000
 netstat -ano | findstr :8000
 
-# Matar processo
+# Matar processo (substitua <PID>)
 taskkill /PID <PID> /F
 ```
 
@@ -97,11 +88,12 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 ```
 scripts/
-├── start-all-parallel.ps1     # Iniciar tudo (paralelo)
-├── start-all.ps1              # Iniciar tudo (janelas separadas)
-├── start-backend.ps1          # Só backend
-├── start-frontend-dev.ps1     # Só frontend (dev)
-├── start-frontend.ps1         # Só frontend (build+serve)
+├── start-all-new.ps1          # Iniciar tudo (NOVO - recomendado)
+├── start-backend.ps1          # Só backend em novo terminal
+├── start-frontend-dev.ps1     # Só frontend em novo terminal
+├── start-all-parallel.ps1     # Iniciar tudo (jobs - antigo)
+├── start-all.ps1              # Iniciar tudo (janelas - antigo)
+├── start-frontend.ps1         # Build + serve (antigo)
 ├── README.md                  # Este arquivo
 └── SCRIPTS.md                 # Documentação detalhada
 ```
