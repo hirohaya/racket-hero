@@ -1,0 +1,323 @@
+/* Debug.css - Estilos para página de debug */
+
+.debug-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  color: #333;
+}
+
+.debug-container h1 {
+  text-align: center;
+  color: white;
+  margin-bottom: 2rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.debug-section {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.debug-section h2 {
+  color: #667eea;
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 0.5rem;
+}
+
+/* Formulário de Teste */
+.test-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.test-input,
+.test-select {
+  flex: 1;
+  padding: 0.75rem;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: border-color 0.3s;
+}
+
+.test-input:focus,
+.test-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.test-select {
+  flex: 0.3;
+}
+
+.btn-test {
+  padding: 0.75rem 1.5rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-test:hover {
+  background: #5568d3;
+}
+
+.btn-test:active {
+  transform: scale(0.98);
+}
+
+/* Controles de Log */
+.log-controls {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-control {
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 0.9rem;
+}
+
+.btn-load {
+  background: #3498db;
+  color: white;
+}
+
+.btn-load:hover {
+  background: #2980b9;
+}
+
+.btn-clear {
+  background: #e74c3c;
+  color: white;
+}
+
+.btn-clear:hover {
+  background: #c0392b;
+}
+
+.btn-download {
+  background: #27ae60;
+  color: white;
+}
+
+.btn-download:hover {
+  background: #229954;
+}
+
+.filter-select {
+  padding: 0.6rem 1rem;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: border-color 0.3s;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+/* Lista de Logs */
+.logs-list {
+  max-height: 500px;
+  overflow-y: auto;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  background: #f9f9f9;
+}
+
+.log-entry {
+  padding: 1rem;
+  border-left: 4px solid #999;
+  margin: 0.5rem 0;
+  background: white;
+  border-radius: 2px;
+  display: grid;
+  grid-template-columns: 80px 80px 150px 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.log-entry.log-debug {
+  border-left-color: #95a5a6;
+  background: #f8f9fa;
+}
+
+.log-entry.log-info {
+  border-left-color: #3498db;
+  background: #ecf0f6;
+}
+
+.log-entry.log-warning {
+  border-left-color: #f39c12;
+  background: #fffaf0;
+}
+
+.log-entry.log-error {
+  border-left-color: #e74c3c;
+  background: #fff5f5;
+}
+
+.log-entry.log-critical {
+  border-left-color: #c0392b;
+  background: #ffe6e6;
+  border: 2px solid #c0392b;
+}
+
+.log-timestamp {
+  font-size: 0.85rem;
+  color: #7f8c8d;
+  font-family: 'Courier New', monospace;
+}
+
+.log-level {
+  font-weight: bold;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.log-entry.log-debug .log-level {
+  color: #95a5a6;
+}
+
+.log-entry.log-info .log-level {
+  color: #3498db;
+}
+
+.log-entry.log-warning .log-level {
+  color: #f39c12;
+}
+
+.log-entry.log-error .log-level {
+  color: #e74c3c;
+}
+
+.log-entry.log-critical .log-level {
+  color: #c0392b;
+}
+
+.log-module {
+  font-size: 0.85rem;
+  color: #667eea;
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.log-message {
+  grid-column: 4;
+  font-weight: 500;
+  color: #2c3e50;
+  word-break: break-word;
+}
+
+.log-data {
+  grid-column: 1 / -1;
+  margin-top: 0.5rem;
+  background: #f5f5f5;
+  border-left: 3px solid #667eea;
+  padding: 0.5rem;
+  border-radius: 2px;
+  overflow-x: auto;
+}
+
+.log-data pre {
+  margin: 0;
+  font-size: 0.8rem;
+  font-family: 'Courier New', monospace;
+  color: #555;
+}
+
+.no-logs {
+  text-align: center;
+  color: #95a5a6;
+  padding: 2rem;
+  font-style: italic;
+}
+
+/* Footer */
+.debug-footer {
+  text-align: center;
+  color: white;
+  margin-top: 2rem;
+}
+
+.hint {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .debug-container {
+    padding: 1rem;
+  }
+
+  .test-form {
+    flex-direction: column;
+  }
+
+  .test-select {
+    flex: 1;
+  }
+
+  .log-entry {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+
+  .log-message {
+    grid-column: 1;
+  }
+
+  .log-controls {
+    justify-content: space-between;
+  }
+
+  .btn-control {
+    flex: 1;
+    min-width: 100px;
+  }
+}
+
+/* Scrollbar customizado */
+.logs-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.logs-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.logs-list::-webkit-scrollbar-thumb {
+  background: #667eea;
+  border-radius: 4px;
+}
+
+.logs-list::-webkit-scrollbar-thumb:hover {
+  background: #5568d3;
+}

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import authService from '../services/authService';
+import logger from '../services/logger';
 
 const AuthContext = createContext();
 
@@ -13,6 +14,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const loadUser = async () => {
       try {
+        logger.info('Carregando usuário autenticado...');
         const token = authService.getAccessToken();
         if (token) {
           // Tentar obter dados do servidor
@@ -20,23 +22,27 @@ export const AuthProvider = ({ children }) => {
             const currentUser = await authService.getCurrentUser();
             setUser(currentUser);
             setIsAuthenticated(true);
+            logger.info('Usuário carregado com sucesso', { email: currentUser.email });
           } catch (error) {
             // Se falhar, usar dados do localStorage
             const storedUser = authService.getUserFromStorage();
             if (storedUser) {
               setUser(storedUser);
               setIsAuthenticated(true);
+              logger.warning('Usando dados do localStorage para o usuário');
             } else {
               // Sem dados válidos, logout
               authService.logout();
               setIsAuthenticated(false);
+              logger.warning('Nenhum dado de usuário disponível');
             }
           }
         } else {
           setIsAuthenticated(false);
+          logger.debug('Nenhum token de acesso encontrado');
         }
       } catch (err) {
-        console.error('Erro ao carregar usuário:', err);
+        logger.error('Erro ao carregar usuário', err.message);
         setError(err.message);
         setIsAuthenticated(false);
       } finally {
@@ -51,13 +57,16 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
+      logger.info('Tentando fazer login', { email });
       const response = await authService.login(email, senha);
       setUser(response.usuario);
       setIsAuthenticated(true);
+      logger.info('Login realizado com sucesso', { email: response.usuario.email });
       return response;
     } catch (err) {
       const errorMessage = err.response?.data?.detail || 'Erro ao fazer login';
       setError(errorMessage);
+      logger.error('Erro ao fazer login', { email, error: errorMessage });
       throw err;
     } finally {
       setLoading(false);
@@ -68,13 +77,16 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
+      logger.info('Tentando registrar novo usuário', { email, nome });
       const response = await authService.register(email, nome, senha);
       setUser(response.usuario);
       setIsAuthenticated(true);
+      logger.info('Registro realizado com sucesso', { email: response.usuario.email });
       return response;
     } catch (err) {
       const errorMessage = err.response?.data?.detail || 'Erro ao registrar';
       setError(errorMessage);
+      logger.error('Erro ao registrar', { email, error: errorMessage });
       throw err;
     } finally {
       setLoading(false);
@@ -82,6 +94,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    logger.info('Fazendo logout');
     authService.logout();
     setUser(null);
     setIsAuthenticated(false);

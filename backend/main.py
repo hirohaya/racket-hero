@@ -6,6 +6,9 @@ import os
 
 from database import init_db
 from routers import auth
+from logger import get_logger
+
+log = get_logger("main")
 
 # Criar aplicação FastAPI
 app = FastAPI(
@@ -32,9 +35,9 @@ def startup():
     Inicializar banco de dados quando aplicação inicia.
     Cria todas as tabelas definidas nos modelos.
     """
-    print("[INFO] Inicializando banco de dados...")
+    log.info("Inicializando banco de dados...")
     init_db()
-    print("[INFO] Banco de dados pronto!")
+    log.info("Banco de dados pronto!")
 
 # Health check endpoint
 @app.get("/health", tags=["System"])
