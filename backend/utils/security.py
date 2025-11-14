@@ -1,0 +1,173 @@
+# utils/security.py - Utilidades de segurança (JWT, bcrypt)
+
+from datetime import datetime, timedelta
+from typing import Optional
+import os
+from jose import JWTError, jwt
+from passlib.context import CryptContext
+from pydantic import BaseModel
+
+# Configurações de segurança
+SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-change-in-production")
+ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "15"))
+REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "7"))
+
+# Contexto de criptografia de senha (bcrypt)
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# Schemas para tokens
+class TokenData(BaseModel):
+    """Dados do token JWT"""
+    usuario_id: int
+    email: str
+    tipo: str  # 'usuario' ou 'admin'
+
+class TokenResponse(BaseModel):
+    """Resposta com tokens"""
+    access_token: str
+    refresh_token: Optional[str] = None
+    token_type: str = "bearer"
+    expires_in: int  # segundos
+
+# Funções de senha
+def hash_password(password: str) -> str:
+    """
+    Hash de senha usando bcrypt.
+    
+    Args:
+        password: Senha em texto plano
+        
+    Returns:
+        Hash bcrypt da senha
+    """
+    return pwd_context.hash(password)
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """
+    Verificar senha contra hash.
+    
+    Args:
+        plain_password: Senha em texto plano
+        hashed_password: Hash armazenado
+        
+    Returns:
+        True se senha é válida, False caso contrário
+    """
+    return pwd_context.verify(plain_password, hashed_password)
+
+# Funções de JWT
+def create_access_token(usuario_id: int, email: str, tipo: str) -> str:
+    """
+    Criar token de acesso JWT.
+    
+    Args:
+        usuario_id: ID do usuário
+        email: Email do usuário
+        tipo: Tipo de usuário ('usuario' ou 'admin')
+        
+    Returns:
+        Token JWT assinado
+        
+    Exemplo:
+        token = create_access_token(1, "user@example.com", "usuario")
+    """
+    to_encode = {
+        "usuario_id": usuario_id,
+        "email": email,
+        "tipo": tipo,
+        "iat": datetime.utcnow(),  # Issued at
+        "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+        "token_type": "access"
+    }
+    
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+def create_refresh_token(usuario_id: int, email: str) -> str:
+    """
+    Criar token de refresh JWT.
+    
+    Args:
+        usuario_id: ID do usuário
+        email: Email do usuário
+        
+    Returns:
+        Token JWT de refresh assinado
+    """
+    to_encode = {
+        "usuario_id": usuario_id,
+        "email": email,
+        "iat": datetime.utcnow(),
+        "exp": datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS),
+        "token_type": "refresh"
+    }
+    
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+def verify_token(token: str) -> Optional[TokenData]:
+    """
+    Verificar e decodificar token JWT.
+    
+    Args:
+        token: Token JWT
+        
+    Returns:
+        TokenData se válido, None se inválido ou expirado
+    """
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        usuario_id: int = payload.get("usuario_id")
+        email: str = payload.get("email")
+        tipo: str = payload.get("tipo")
+        
+        if usuario_id is None or email is None:
+            return None
+            
+        return TokenData(usuario_id=usuario_id, email=email, tipo=tipo)
+    except JWTError:
+        return None
+
+def create_reset_password_token(usuario_id: int) -> tuple[str, datetime]:
+    """
+    Criar token para recuperação de senha (válido por 30 minutos).
+    
+    Args:
+        usuario_id: ID do usuário
+        
+    Returns:
+        Tuple (token, expiration_datetime)
+    """
+    expires = datetime.utcnow() + timedelta(minutes=30)
+    to_encode = {
+        "usuario_id": usuario_id,
+        "iat": datetime.utcnow(),
+        "exp": expires,
+        "token_type": "password_reset"
+    }
+    
+    token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return token, expires
+
+def verify_reset_token(token: str) -> Optional[int]:
+    """
+    Verificar token de reset de senha.
+    
+    Args:
+        token: Token de reset
+        
+    Returns:
+        usuario_id se válido, None se inválido ou expirado
+    """
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        usuario_id: int = payload.get("usuario_id")
+        token_type: str = payload.get("token_type")
+        
+        if usuario_id is None or token_type != "password_reset":
+            return None
+            
+        return usuario_id
+    except JWTError:
+        return None
