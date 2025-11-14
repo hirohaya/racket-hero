@@ -3,8 +3,8 @@
 from datetime import datetime, timedelta
 from typing import Optional
 import os
+import bcrypt
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 from pydantic import BaseModel
 
 # Configurações de segurança
@@ -12,9 +12,6 @@ SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-change-in-production")
 ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "15"))
 REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "7"))
-
-# Contexto de criptografia de senha (bcrypt)
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Schemas para tokens
 class TokenData(BaseModel):
@@ -30,7 +27,7 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
     expires_in: int  # segundos
 
-# Funções de senha
+# Funções de senha com bcrypt direto
 def hash_password(password: str) -> str:
     """
     Hash de senha usando bcrypt.
@@ -41,7 +38,10 @@ def hash_password(password: str) -> str:
     Returns:
         Hash bcrypt da senha
     """
-    return pwd_context.hash(password)
+    # Limitar senha a 72 bytes (limite do bcrypt)
+    password_bytes = password.encode('utf-8')[:72]
+    salt = bcrypt.gensalt(rounds=12)
+    return bcrypt.hashpw(password_bytes, salt).decode('utf-8')
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """
@@ -54,7 +54,8 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     Returns:
         True se senha é válida, False caso contrário
     """
-    return pwd_context.verify(plain_password, hashed_password)
+    password_bytes = plain_password.encode('utf-8')[:72]
+    return bcrypt.checkpw(password_bytes, hashed_password.encode('utf-8'))
 
 # Funções de JWT
 def create_access_token(usuario_id: int, email: str, tipo: str) -> str:
@@ -108,10 +109,10 @@ def create_refresh_token(usuario_id: int, email: str) -> str:
 
 def verify_token(token: str) -> Optional[TokenData]:
     """
-    Verificar e decodificar token JWT.
+    Verificar e decodificar token JWT (access ou refresh).
     
     Args:
-        token: Token JWT
+        token: Token JWT (pode ser access_token ou refresh_token)
         
     Returns:
         TokenData se válido, None se inválido ou expirado
@@ -120,7 +121,7 @@ def verify_token(token: str) -> Optional[TokenData]:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         usuario_id: int = payload.get("usuario_id")
         email: str = payload.get("email")
-        tipo: str = payload.get("tipo")
+        tipo: str = payload.get("tipo", "usuario")  # Default para refresh tokens que não têm tipo
         
         if usuario_id is None or email is None:
             return None

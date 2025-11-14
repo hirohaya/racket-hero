@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 
 from database import init_db
+from routers import auth
 
 # Criar aplicação FastAPI
 app = FastAPI(
@@ -45,11 +46,8 @@ async def health_check():
         "version": "1.0.0"
     }
 
-# Incluir routers quando criados
-# @app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
-# @app.include_router(usuarios.router, prefix="/api/usuarios", tags=["Usuarios"])
-# @app.include_router(eventos.router, prefix="/api/eventos", tags=["Eventos"])
-# etc...
+# Incluir routers
+app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 
 if __name__ == "__main__":
     import uvicorn
