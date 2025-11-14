@@ -1,0 +1,42 @@
+[
+  {
+    "event_id": 1,
+    "name": "João Silva",
+    "initial_elo": 1600
+  },
+  {
+    "event_id": 1,
+    "name": "Maria Santos",
+    "initial_elo": 1550
+  },
+  {
+    "event_id": 1,
+    "name": "Pedro Oliveira",
+    "initial_elo": 1700
+  },
+  {
+    "event_id": 1,
+    "name": "Ana Costa",
+    "initial_elo": 1650
+  },
+  {
+    "event_id": 2,
+    "name": "Carlos Mendes",
+    "initial_elo": 1500
+  },
+  {
+    "event_id": 2,
+    "name": "Lucas Ferreira",
+    "initial_elo": 1580
+  },
+  {
+    "event_id": 3,
+    "name": "Roberto Alves",
+    "initial_elo": 1620
+  },
+  {
+    "event_id": 3,
+    "name": "Felipe Rocha",
+    "initial_elo": 1480
+  }
+]

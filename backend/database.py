@@ -39,5 +39,8 @@ def init_db():
     """Inicializar banco de dados (criar todas as tabelas)."""
     # Importar models para registrar no Base
     from models.usuario import Usuario  # noqa
+    from models.event import Event  # noqa
+    from models.player import Player  # noqa
+    from models.match import Match  # noqa
     
     Base.metadata.create_all(bind=engine)

@@ -1,0 +1,32 @@
+[
+  {
+    "event_id": 1,
+    "player_1_id": 1,
+    "player_2_id": 2,
+    "winner_id": 1
+  },
+  {
+    "event_id": 1,
+    "player_1_id": 3,
+    "player_2_id": 4,
+    "winner_id": 3
+  },
+  {
+    "event_id": 1,
+    "player_1_id": 1,
+    "player_2_id": 3,
+    "winner_id": 1
+  },
+  {
+    "event_id": 2,
+    "player_1_id": 5,
+    "player_2_id": 6,
+    "winner_id": 6
+  },
+  {
+    "event_id": 3,
+    "player_1_id": 7,
+    "player_2_id": 8,
+    "winner_id": 7
+  }
+]

@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 
 from database import init_db
-from routers import auth
+from routers import auth, events, players, matches, ranking
 from logger import get_logger
 
 log = get_logger("main")
@@ -51,6 +51,10 @@ async def health_check():
 
 # Incluir routers
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
+app.include_router(events.router, prefix="/events", tags=["Events"])
+app.include_router(players.router, prefix="/players", tags=["Players"])
+app.include_router(matches.router, prefix="/matches", tags=["Matches"])
+app.include_router(ranking.router, prefix="/ranking", tags=["Ranking"])
 
 if __name__ == "__main__":
     import uvicorn
