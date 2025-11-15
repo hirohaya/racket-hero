@@ -107,6 +107,36 @@ npm start
 | Feature 4: Ranking (ELO) | 📋 Planejado | 5-6 |
 | Feature 5: Autenticação | 🚀 Começando | 1-2 |
 
+### 👤 Contas de Teste
+
+13 contas disponíveis para testes com senha: **`Senha123!`**
+
+#### Botões na Página de Login
+Na página de login, existem 3 botões que preenchem automaticamente as credenciais:
+- **🔐 Admin** → admin@test.com (Administrador)
+- **🎯 Jogador** → jogador@test.com (Jogador)
+- **📋 Organizador** → organizador@test.com (Organizador)
+
+#### Todas as Contas Disponíveis
+
+| Email | Nome | Tipo | Login? |
+|-------|------|------|--------|
+| **admin@test.com** | Admin Teste | admin | ✅ |
+| **organizador@test.com** | Organizador Teste | organizador | ✅ |
+| **org2@test.com** | Organizador 2 | organizador | ✅ |
+| **jogador@test.com** | Jogador Teste | usuario | ✅ |
+| **joao@test.com** | Joao Silva | usuario | ✅ |
+| **maria@test.com** | Maria Santos | usuario | ✅ |
+| **pedro@test.com** | Pedro Oliveira | usuario | ✅ |
+| **ana@test.com** | Ana Costa | usuario | ✅ |
+| **carlos@test.com** | Carlos Mendes | usuario | ✅ |
+| **patricia@test.com** | Patricia Lima | usuario | ✅ |
+| **roberto@test.com** | Roberto Alves | usuario | ✅ |
+| **fernanda@test.com** | Fernanda Souza | usuario | ✅ |
+| **lucas@test.com** | Lucas Martins | usuario | ✅ |
+
+**Ver [CONTAS_TESTE_DISPONIVEIS.md](./CONTAS_TESTE_DISPONIVEIS.md) para mais detalhes.**
+
 ### 🧪 Testes
 
 ```bash
