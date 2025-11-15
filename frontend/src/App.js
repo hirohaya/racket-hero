@@ -7,6 +7,9 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Debug from './pages/Debug';
+import Events from './pages/Events';
+import CreateEvent from './pages/CreateEvent';
+import EditEvent from './pages/EditEvent';
 import './App.css';
 
 function App() {
@@ -24,10 +27,23 @@ function App() {
               path="/eventos"
               element={
                 <ProtectedRoute>
-                  <div className="page-placeholder">
-                    <h1>Eventos (em construção)</h1>
-                    <p>Esta página será implementada em breve</p>
-                  </div>
+                  <Events />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/novo-evento"
+              element={
+                <ProtectedRoute>
+                  <CreateEvent />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/editar-evento/:eventId"
+              element={
+                <ProtectedRoute>
+                  <EditEvent />
                 </ProtectedRoute>
               }
             />
