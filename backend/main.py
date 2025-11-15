@@ -3,6 +3,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import os
+from contextlib import asynccontextmanager
 
 from database import init_db
 from routers import auth, events, players, matches, ranking
@@ -10,11 +11,26 @@ from logger import get_logger
 
 log = get_logger("main")
 
+# Lifespan para startup/shutdown
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Gerenciar startup e shutdown da aplicação"""
+    # Startup
+    log.info("Inicializando banco de dados...")
+    init_db()
+    log.info("Banco de dados pronto!")
+    
+    yield
+    
+    # Shutdown
+    log.info("Encerrando aplicação...")
+
 # Criar aplicação FastAPI
 app = FastAPI(
     title="Racket Hero API",
     description="API para gerenciamento de eventos de tênis de mesa",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 # Middleware de CORS
@@ -27,17 +43,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Evento de startup
-@app.on_event("startup")
-def startup():
-    """
-    Inicializar banco de dados quando aplicação inicia.
-    Cria todas as tabelas definidas nos modelos.
-    """
-    log.info("Inicializando banco de dados...")
-    init_db()
-    log.info("Banco de dados pronto!")
 
 # Health check endpoint
 @app.get("/health", tags=["System"])
