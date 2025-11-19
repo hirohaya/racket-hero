@@ -3,7 +3,7 @@ import api from './api';
 const authService = {
   // Registrar novo usuário
   register: async (email, nome, senha) => {
-    const response = await api.post('/api/auth/register', {
+    const response = await api.post('/auth/register', {
       email,
       nome,
       senha,
@@ -20,7 +20,7 @@ const authService = {
 
   // Fazer login
   login: async (email, senha) => {
-    const response = await api.post('/api/auth/login', {
+    const response = await api.post('/auth/login', {
       email,
       senha,
     });
@@ -37,7 +37,7 @@ const authService = {
   // Obter dados do usuário autenticado
   getCurrentUser: async () => {
     try {
-      const response = await api.get('/api/auth/me');
+      const response = await api.get('/auth/me');
       return response.data;
     } catch (error) {
       // Se não conseguir obter, tentar usar dados do localStorage
