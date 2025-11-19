@@ -152,6 +152,10 @@ desktop.ini
 !docs/
 !docs/**
 
+# Deployment Guides (NOT versioned - for local reference only)
+docs/railway/**
+!docs/railway/README.md
+
 # Configuration examples (KEEP - for setup)
 !.env.example
 !.env.*.example
