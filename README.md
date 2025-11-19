@@ -47,6 +47,20 @@ npm start                       # Start development server
 - **Frontend**: http://localhost:3000
 - **API Docs**: http://127.0.0.1:8000/docs
 
+### 4. Criar Contas de Teste (Opcional)
+```bash
+# Criar 3 contas padrão (Admin, Jogador, Organizador)
+cd backend
+python
+>>> from tests.create_test_accounts import create_test_accounts_db
+>>> create_test_accounts_db()
+```
+
+**Contas padrão criadas:**
+- 🔐 **Admin**: `admin@test.com` / `Senha123!`
+- 🎯 **Jogador**: `jogador@test.com` / `Senha123!`
+- 📋 **Organizador**: `organizador@test.com` / `Senha123!`
+
 ## 📊 Características Implementadas
 
 ### Core Features
@@ -247,7 +261,30 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 REACT_APP_API_URL=http://127.0.0.1:8000
 ```
 
-## 🐛 Troubleshooting
+## �️ Debug & Helper Scripts (Local Use Only)
+
+Para depuração e testes locais, você pode criar scripts auxiliares na pasta `scripts/`:
+
+### Exemplo: Script para Criar Contas Adicionais
+```python
+# scripts/create_more_accounts.py (LOCAL ONLY - not tracked in git)
+import sys
+sys.path.insert(0, '../backend')
+from tests.create_more_test_accounts import main
+main()
+```
+
+### Exemplo: Script para Testar API
+```python
+# scripts/test_api_health.py (LOCAL ONLY - not tracked in git)
+import requests
+response = requests.get("http://127.0.0.1:8000/health")
+print(response.json())
+```
+
+**Nota**: Scripts de debug e ferramentas de desenvolvimento local estão no `.gitignore` para manter o repositório limpo. Crie-os conforme necessário para seus testes locais.
+
+## �🐛 Troubleshooting
 
 ### Backend Issues
 - **ModuleNotFoundError**: Execute `pip install -r requirements.txt`
