@@ -153,6 +153,26 @@ desktop.ini
 # but not tracked in git to keep repository clean
 docs/**
 !docs/README.md
+!docs/DEVELOPMENT_GUIDE.md
+!docs/DEPLOYMENT.md
+
+# ============================================================================
+# Debug & Helper Scripts (Local Use Only - NOT Versioned)
+# ============================================================================
+
+# Debug scripts for database manipulation, testing, and local development
+# These are NOT essential for production operation
+scripts/debug_*.py
+scripts/test_*.py
+scripts/verify_*.py
+scripts/*.playwrite
+scripts/*.playwright
+
+# Examples:
+# - scripts/debug_database.py (local DB inspection)
+# - scripts/test_accounts.py (local account testing)
+# - scripts/verify_dependencies.py (local dependency checks)
+# - scripts/test_accounts_playwright.py (local UI testing)
 
 # ============================================================================
 # KEEP IN GIT (Important!)
