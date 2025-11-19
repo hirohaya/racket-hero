@@ -3,7 +3,7 @@ Validações robustas para entrada de dados - Racket Hero
 Implementa validações em Pydantic schemas para garantir dados válidos
 """
 
-from pydantic import BaseModel, Field, validator, EmailStr
+from pydantic import BaseModel, Field, field_validator, EmailStr, ConfigDict
 from typing import Optional
 from datetime import date
 import re
@@ -11,6 +11,17 @@ import re
 
 class UsuarioRegisterSchema(BaseModel):
     """Schema para registro de novo usuário"""
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "email": "joao@example.com",
+                "nome": "João Silva",
+                "password": "SenhaForte123!",
+                "tipo": "jogador"
+            }
+        }
+    )
     
     email: EmailStr = Field(..., description="Email do usuário")
     nome: str = Field(
@@ -27,18 +38,20 @@ class UsuarioRegisterSchema(BaseModel):
     )
     tipo: str = Field(
         default="jogador",
-        regex="^(admin|jogador|organizador)$",
+        pattern="^(admin|jogador|organizador)$",
         description="Tipo de usuário"
     )
     
-    @validator('nome')
+    @field_validator('nome')
+    @classmethod
     def validate_nome(cls, v):
         """Validar nome: sem números, caracteres especiais"""
         if not re.match(r'^[a-zA-Zçãõáéíóú\s]+$', v):
             raise ValueError('Nome deve conter apenas letras e espaços')
         return v.title()
     
-    @validator('password')
+    @field_validator('password')
+    @classmethod
     def validate_password(cls, v):
         """Validar senha: deve conter letra, número, caractere especial"""
         if not re.search(r'[A-Za-z]', v):
@@ -48,31 +61,37 @@ class UsuarioRegisterSchema(BaseModel):
         if not re.search(r'[!@#$%^&*(),.?":{}|<>]', v):
             raise ValueError('Senha deve conter pelo menos um caractere especial')
         return v
-    
-    class Config:
-        example = {
-            "email": "joao@example.com",
-            "nome": "João Silva",
-            "password": "SenhaForte123!",
-            "tipo": "jogador"
-        }
 
 
 class UsuarioLoginSchema(BaseModel):
     """Schema para login"""
     
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "email": "joao@example.com",
+                "password": "SenhaForte123!"
+            }
+        }
+    )
+    
     email: EmailStr = Field(..., description="Email do usuário")
     password: str = Field(..., description="Senha")
-    
-    class Config:
-        example = {
-            "email": "joao@example.com",
-            "password": "SenhaForte123!"
-        }
 
 
 class EventCreateSchema(BaseModel):
     """Schema para criar evento"""
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "name": "Torneio Regional",
+                "date": "2025-12-20",
+                "time": "14:00",
+                "active": True
+            }
+        }
+    )
     
     name: str = Field(
         ...,
@@ -90,7 +109,8 @@ class EventCreateSchema(BaseModel):
     )
     active: bool = Field(default=True, description="Evento ativo?")
     
-    @validator('date')
+    @field_validator('date')
+    @classmethod
     def validate_date(cls, v):
         """Validar formato de data"""
         try:
@@ -101,7 +121,8 @@ class EventCreateSchema(BaseModel):
         except ValueError:
             raise ValueError('Data deve estar no formato YYYY-MM-DD')
     
-    @validator('time')
+    @field_validator('time')
+    @classmethod
     def validate_time(cls, v):
         """Validar formato de hora"""
         if not re.match(r'^\d{2}:\d{2}$', v):
@@ -111,18 +132,21 @@ class EventCreateSchema(BaseModel):
         if not (0 <= hour < 24 and 0 <= minute < 60):
             raise ValueError('Hora inválida')
         return v
-    
-    class Config:
-        example = {
-            "name": "Torneio Regional",
-            "date": "2025-12-20",
-            "time": "14:00",
-            "active": True
-        }
 
 
 class PlayerCreateSchema(BaseModel):
     """Schema para criar jogador"""
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "event_id": 1,
+                "name": "João Silva",
+                "club": "Clube A",
+                "initial_elo": 1600.0
+            }
+        }
+    )
     
     event_id: int = Field(..., gt=0, description="ID do evento")
     name: str = Field(
@@ -143,38 +167,44 @@ class PlayerCreateSchema(BaseModel):
         description="Elo inicial (400-3000)"
     )
     
-    @validator('name')
+    @field_validator('name')
+    @classmethod
     def validate_name(cls, v):
         """Validar nome do jogador"""
         if not re.match(r'^[a-zA-Zçãõáéíóú\s]+$', v):
             raise ValueError('Nome deve conter apenas letras')
         return v.title()
     
-    @validator('club')
+    @field_validator('club')
+    @classmethod
     def validate_club(cls, v):
         """Validar nome do clube"""
         if v and not re.match(r'^[a-zA-Zçãõáéíóú\s0-9]+$', v):
             raise ValueError('Clube deve conter apenas letras e números')
         return v.title() if v else v
     
-    @validator('initial_elo')
+    @field_validator('initial_elo')
+    @classmethod
     def validate_elo(cls, v):
         """Validar Elo inicial"""
         if v % 1 != 0:
             raise ValueError('Elo deve ser um número inteiro')
         return float(v)
-    
-    class Config:
-        example = {
-            "event_id": 1,
-            "name": "João Silva",
-            "club": "Clube A",
-            "initial_elo": 1600.0
-        }
 
 
 class MatchCreateSchema(BaseModel):
     """Schema para criar partida"""
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "event_id": 1,
+                "player_1_id": 1,
+                "player_2_id": 2,
+                "winner_id": 1
+            }
+        }
+    )
     
     event_id: int = Field(..., gt=0, description="ID do evento")
     player_1_id: int = Field(..., gt=0, description="ID do jogador 1")
@@ -185,29 +215,23 @@ class MatchCreateSchema(BaseModel):
         description="ID do vencedor (opcional)"
     )
     
-    @validator('player_2_id')
-    def validate_different_players(cls, v, values):
+    @field_validator('player_2_id')
+    @classmethod
+    def validate_different_players(cls, v, info):
         """Validar que os jogadores são diferentes"""
-        if 'player_1_id' in values and v == values['player_1_id']:
+        if 'player_1_id' in info.data and v == info.data['player_1_id']:
             raise ValueError('Jogador 1 e Jogador 2 devem ser diferentes')
         return v
     
-    @validator('winner_id', always=True)
-    def validate_winner(cls, v, values):
+    @field_validator('winner_id', mode='after')
+    @classmethod
+    def validate_winner(cls, v, info):
         """Validar que vencedor é um dos jogadores ou None"""
         if v is not None:
-            valid_ids = {values.get('player_1_id'), values.get('player_2_id')}
+            valid_ids = {info.data.get('player_1_id'), info.data.get('player_2_id')}
             if v not in valid_ids:
                 raise ValueError('Vencedor deve ser um dos jogadores')
         return v
-    
-    class Config:
-        example = {
-            "event_id": 1,
-            "player_1_id": 1,
-            "player_2_id": 2,
-            "winner_id": 1
-        }
 
 
 class MatchUpdateSchema(BaseModel):
@@ -218,11 +242,12 @@ class MatchUpdateSchema(BaseModel):
     player_2_id: int = Field(..., gt=0)
     winner_id: Optional[int] = Field(None, gt=0)
     
-    @validator('winner_id', always=True)
-    def validate_winner(cls, v, values):
+    @field_validator('winner_id', mode='after')
+    @classmethod
+    def validate_winner(cls, v, info):
         """Validar que vencedor é um dos jogadores ou None"""
         if v is not None:
-            valid_ids = {values.get('player_1_id'), values.get('player_2_id')}
+            valid_ids = {info.data.get('player_1_id'), info.data.get('player_2_id')}
             if v not in valid_ids:
                 raise ValueError('Vencedor deve ser um dos jogadores')
         return v
