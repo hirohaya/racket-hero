@@ -145,16 +145,17 @@ desktop.ini
 .Trashes
 
 # ============================================================================
-# KEEP IN GIT (Important!)
+# Documentation (Local Reference - NOT Versioned)
 # ============================================================================
 
-# Documentation (KEEP - important for project)
-!docs/
-!docs/**
+# All documentation files are local-only, kept in docs/ for reference
+# but not tracked in git to keep repository clean
+docs/**
+!docs/README.md
 
-# Deployment Guides (NOT versioned - for local reference only)
-docs/railway/**
-!docs/railway/README.md
+# ============================================================================
+# KEEP IN GIT (Important!)
+# ============================================================================
 
 # Configuration examples (KEEP - for setup)
 !.env.example
