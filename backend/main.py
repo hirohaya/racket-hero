@@ -123,6 +123,12 @@ async def serve_index():
 @app.get("/{path:path}", include_in_schema=False)
 async def serve_static(path: str):
     """Servir arquivos estáticos do frontend"""
+    # NÃO servir rotas /api - deixar FastAPI lidar com elas
+    if path.startswith("api") or path.startswith("api/"):
+        # Deixar o FastAPI retornar 404 padrão para /api routes não encontradas
+        from fastapi.responses import JSONResponse
+        return JSONResponse({"error": "Not found"}, status_code=404)
+    
     file_path = frontend_build_path / path
     
     # Se é um arquivo estático, servir
