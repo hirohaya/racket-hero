@@ -15,10 +15,11 @@ RUN npm ci --omit=dev
 COPY frontend/src ./src
 COPY frontend/public ./public
 
-# Build do React com API URL apontando para a própria aplicação
-# O frontend será servido junto com o backend, então usa a mesma origem
-ARG REACT_APP_API_URL=/api
-ENV REACT_APP_API_URL=${REACT_APP_API_URL}
+# Arquivo package.json para referência
+COPY frontend/package.json .
+
+# Build do React com API URL padrão (/api para modo relativo)
+ENV REACT_APP_API_URL=/api
 RUN npm run build
 
 # Stage 2: Backend + Frontend servido

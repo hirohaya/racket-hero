@@ -1,7 +1,9 @@
 import axios from 'axios';
 import logger from './logger';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000';
+// Usar URL relativa /api por padrão (funciona em qualquer domínio)
+// Em desenvolvimento, pode ser sobrescrito via REACT_APP_API_URL env var
+const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
