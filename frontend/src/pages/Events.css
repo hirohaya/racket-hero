@@ -118,6 +118,15 @@
   transition: all 0.2s;
 }
 
+.details-btn {
+  background-color: #9b59b6;
+  color: white;
+}
+
+.details-btn:hover {
+  background-color: #8e44ad;
+}
+
 .edit-btn {
   background-color: #3498db;
   color: white;

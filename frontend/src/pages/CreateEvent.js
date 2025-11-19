@@ -3,13 +3,15 @@
  * Formulario para criar novo evento
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 import eventsAPI from '../services/events';
 import './CreateEvent.css';
 
 function CreateEvent() {
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
@@ -18,6 +20,22 @@ function CreateEvent() {
     time: '19:00'
   });
   const [errors, setErrors] = useState({});
+
+  // Verificar permissões ao montar
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+
+    // Verificar se tem permissão para criar evento
+    const canCreateEvent = user?.tipo === 'organizador' || user?.tipo === 'admin';
+    if (!canCreateEvent) {
+      navigate('/eventos', { 
+        state: { error: 'Você não tem permissão para criar eventos' }
+      });
+    }
+  }, [isAuthenticated, user, navigate]);
 
   // Validar formulario
   const validate = () => {

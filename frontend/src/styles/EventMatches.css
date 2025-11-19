@@ -1,0 +1,257 @@
+/* EventMatches.css - Estilos da Página de Partidas */
+
+.event-matches-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.event-matches-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: #3498db;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  background: #ecf0f1;
+  color: #2980b9;
+}
+
+.event-info {
+  flex: 1;
+  min-width: 200px;
+}
+
+.event-info h1 {
+  margin: 0 0 8px 0;
+  color: #2c3e50;
+  font-size: 2rem;
+}
+
+.event-meta {
+  margin: 0;
+  color: #7f8c8d;
+  font-size: 0.95rem;
+}
+
+.btn-lg {
+  padding: 12px 24px;
+  font-size: 1.05rem;
+  white-space: nowrap;
+}
+
+.error-alert {
+  background: #fadbd8;
+  border-left: 4px solid #e74c3c;
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #c0392b;
+}
+
+.error-alert button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #c0392b;
+  padding: 0;
+}
+
+.matches-section {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.matches-section h2 {
+  margin: 0 0 20px 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.empty-state p {
+  color: #7f8c8d;
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+}
+
+.matches-table-container {
+  overflow-x: auto;
+}
+
+.matches-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+}
+
+.matches-table thead {
+  background: #f8f9fa;
+  border-bottom: 2px solid #ecf0f1;
+}
+
+.matches-table th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.95rem;
+}
+
+.matches-table tbody tr {
+  border-bottom: 1px solid #ecf0f1;
+  transition: background-color 0.2s;
+}
+
+.matches-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.matches-table td {
+  padding: 15px 12px;
+  color: #34495e;
+  font-size: 0.95rem;
+}
+
+.player-name {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.player-elo {
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+.vs {
+  text-align: center;
+  color: #95a5a6;
+  font-weight: bold;
+}
+
+.winner {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+.trophy {
+  margin-right: 4px;
+}
+
+.pending-badge {
+  background: #fff3cd;
+  color: #856404;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.btn-small {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: none;
+}
+
+.btn-edit {
+  background: #ecf0f1;
+  color: #3498db;
+}
+
+.btn-edit:hover:not(:disabled) {
+  background: #bdc3c7;
+  transform: scale(1.1);
+}
+
+.btn-delete {
+  background: #ecf0f1;
+  color: #e74c3c;
+}
+
+.btn-delete:hover:not(:disabled) {
+  background: #bdc3c7;
+  transform: scale(1.1);
+}
+
+.btn-small:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.match-row.pending {
+  opacity: 0.8;
+}
+
+.match-row.played {
+  opacity: 1;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #7f8c8d;
+  font-size: 1.1rem;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .event-matches-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .event-info h1 {
+    font-size: 1.5rem;
+  }
+
+  .matches-table {
+    font-size: 0.85rem;
+  }
+
+  .matches-table th,
+  .matches-table td {
+    padding: 10px 6px;
+  }
+
+  .actions {
+    gap: 4px;
+  }
+
+  .btn-small {
+    padding: 4px 8px;
+    font-size: 0.9rem;
+  }
+}

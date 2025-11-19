@@ -2,16 +2,25 @@
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.pool import StaticPool
 import os
 
 # Obter URL do banco de dados das variáveis de ambiente
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./racket_hero.db")
 
 # Criar engine
-engine = create_engine(
-    DATABASE_URL,
-    connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
-)
+# Para SQLite :memory:, usar StaticPool para garantir mesma conexão
+if DATABASE_URL == "sqlite:///:memory:":
+    engine = create_engine(
+        DATABASE_URL,
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool  # Usar mesmo banco para todas as conexões
+    )
+else:
+    engine = create_engine(
+        DATABASE_URL,
+        connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
+    )
 
 # Criar session factory
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

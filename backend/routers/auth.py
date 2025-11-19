@@ -16,8 +16,10 @@ from utils.security import (
     verify_token, create_reset_password_token, verify_reset_token,
     ACCESS_TOKEN_EXPIRE_MINUTES
 )
+from logger_production import get_logger
 
 router = APIRouter()
+logger = get_logger("auth")
 
 # ============================================================================
 # POST /auth/register - Registrar novo usuário
@@ -42,9 +44,12 @@ async def register(
     
     **Response:** TokenResponse com access_token e refresh_token
     """
+    logger.info(f"Tentativa de registro: {request.email}")
+    
     # Verificar se email já existe
     usuario_existente = db.query(Usuario).filter(Usuario.email == request.email).first()
     if usuario_existente:
+        logger.warning(f"Erro de registro: email duplicado {request.email}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email já registrado",
@@ -56,13 +61,15 @@ async def register(
         email=request.email,
         nome=request.nome,
         senha_hash=hash_password(request.senha),
-        tipo="usuario",
+        tipo=request.tipo,  # Usar tipo da requisição (padrão: "usuario")
         ativo=True
     )
     
     db.add(novo_usuario)
     db.commit()
     db.refresh(novo_usuario)
+    
+    logger.info(f"Usuário registrado com sucesso: {novo_usuario.id} ({request.email})")
     
     # Criar tokens
     access_token = create_access_token(novo_usuario.id, novo_usuario.email, novo_usuario.tipo)
@@ -101,10 +108,13 @@ async def login(
     
     **Response:** TokenResponse com access_token e refresh_token
     """
+    logger.info(f"Tentativa de login: {request.email}")
+    
     # Buscar usuário por email
     usuario = db.query(Usuario).filter(Usuario.email == request.email).first()
     
     if not usuario:
+        logger.warning(f"Falha de login: email não encontrado {request.email}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Email ou senha incorretos",
@@ -113,6 +123,7 @@ async def login(
     
     # Verificar senha
     if not verify_password(request.senha, usuario.senha_hash):
+        logger.warning(f"Falha de login: senha incorreta para {request.email}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Email ou senha incorretos",
@@ -121,11 +132,14 @@ async def login(
     
     # Verificar se usuário está ativo
     if not usuario.ativo:
+        logger.warning(f"Tentativa de login com usuário inativo: {request.email}")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Usuário inativo",
             headers={"error_code": "USER_INACTIVE"}
         )
+    
+    logger.info(f"Login bem-sucedido: {usuario.id} ({request.email})")
     
     # Criar tokens
     access_token = create_access_token(usuario.id, usuario.email, usuario.tipo)

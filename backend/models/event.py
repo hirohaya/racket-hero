@@ -1,6 +1,6 @@
 """Modelo de Evento para Torneios."""
 
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from database import Base
 
 
@@ -13,6 +13,7 @@ class Event(Base):
         name: Nome do evento
         date: Data no formato YYYY-MM-DD
         time: Hora no formato HH:MM
+        usuario_id: ID do usuário (organizador) que criou o evento
         active: Flag para soft delete
     """
     __tablename__ = "event"
@@ -21,4 +22,5 @@ class Event(Base):
     name = Column(String, index=True)
     date = Column(String)  # YYYY-MM-DD format
     time = Column(String)  # HH:MM format
+    usuario_id = Column(Integer, ForeignKey("usuarios.id"), index=True, nullable=True)
     active = Column(Boolean, default=True)

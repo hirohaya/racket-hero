@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # Backend API + Frontend servido
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: racket-hero-web
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: sqlite:///./racket_hero.db
+      CORS_ORIGINS: http://localhost:3000,http://localhost:8000,http://web:8000
+      LOG_LEVEL: info
+      PYTHONUNBUFFERED: 1
+    volumes:
+      # Persistir banco de dados
+      - ./backend/racket_hero.db:/app/backend/racket_hero.db
+      # Persistir logs
+      - ./backend/logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - racket-hero-network
+
+  # Opcional: PostgreSQL para produção (comentado por padrão)
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: racket-hero-db
+  #   environment:
+  #     POSTGRES_USER: racket_hero
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+  #     POSTGRES_DB: racket_hero
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - racket-hero-network
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U racket_hero"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+networks:
+  racket-hero-network:
+    driver: bridge
+
+volumes:
+  # postgres_data:

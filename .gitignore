@@ -92,19 +92,51 @@ Thumbs.db
 # Project Specific
 # ============================================================================
 
-# Documentation (local, not versioned)
-docs/
+# Design specifications (not versioned, for designer use only)
+design-specs/
+.playwright-mcp/
 
-# Logs
+# Logs (application logs, not debug logs)
 *.log
+backend/logs/
+frontend/logs/
 logs/
 
 # Temp files
 *.tmp
 *.temp
 *.bak
+*.swp
+*.swo
+*~
 
-# MacOS
+# Backup files
+*.backup
+*.backup.sql
+backups/
+
+# Cache files
+.cache/
+.eslintcache
+tsconfig.tsbuildinfo
+
+# OS Files
+.DS_Store
+Thumbs.db
+.AppleDouble
+.AppleDB
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+desktop.ini
+
+# IDE Workspace Settings (local only)
+.vscode/settings.json
+.vscode/launch.json
+.idea/workspace.xml
+
+# macOS
 .AppleDouble
 .AppleDB
 .LSOverride
@@ -113,8 +145,27 @@ logs/
 .Trashes
 
 # ============================================================================
-# Git
+# KEEP IN GIT (Important!)
 # ============================================================================
 
-.git/
-.gitignore
+# Documentation (KEEP - important for project)
+!docs/
+!docs/**
+
+# Configuration examples (KEEP - for setup)
+!.env.example
+!.env.*.example
+
+# GitHub Actions (KEEP - CI/CD)
+!.github/
+!.github/**
+
+# Tests (KEEP - essential)
+!backend/tests/
+!backend/tests/**
+!frontend/src/__tests__/
+!frontend/src/__tests__/**
+
+# Shared utilities (KEEP - needed for development)
+!scripts/
+!scripts/**

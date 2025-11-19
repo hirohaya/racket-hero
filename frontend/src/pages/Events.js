@@ -5,16 +5,21 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import eventsAPI from '../services/events';
 import './Events.css';
 
 function Events() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState(null);
+
+  // Verificar se usuario pode criar eventos
+  const canCreateEvent = user?.tipo === 'organizador' || user?.tipo === 'admin';
 
   // Carregar eventos ao montar componente
   useEffect(() => {
@@ -25,7 +30,7 @@ function Events() {
     try {
       setLoading(true);
       setError(null);
-      const data = await eventsAPI.list();
+      const data = await eventsAPI.listMyEvents();
       setEvents(data);
       console.log('[Events] Eventos carregados:', data);
     } catch (err) {
@@ -38,6 +43,10 @@ function Events() {
 
   const handleNewEvent = () => {
     navigate('/novo-evento');
+  };
+
+  const handleViewDetails = (eventId) => {
+    navigate(`/evento/${eventId}`);
   };
 
   const handleEdit = (eventId) => {
@@ -104,9 +113,11 @@ function Events() {
       {/* Header */}
       <div className="events-header">
         <h1>📋 Eventos</h1>
-        <button className="new-event-btn" onClick={handleNewEvent}>
-          + Novo Evento
-        </button>
+        {canCreateEvent && (
+          <button className="new-event-btn" onClick={handleNewEvent}>
+            + Novo Evento
+          </button>
+        )}
       </div>
 
       {/* Loading state */}
@@ -116,10 +127,16 @@ function Events() {
       {!loading && events.length === 0 && (
         <div className="empty-state">
           <h2>Nenhum evento criado ainda</h2>
-          <p>Clique em "Novo Evento" para comectar!</p>
-          <button className="new-event-btn" onClick={handleNewEvent}>
-            + Criar Primeiro Evento
-          </button>
+          {canCreateEvent ? (
+            <>
+              <p>Clique em "Novo Evento" para comectar!</p>
+              <button className="new-event-btn" onClick={handleNewEvent}>
+                + Criar Primeiro Evento
+              </button>
+            </>
+          ) : (
+            <p>Aguarde um organizador criar um evento.</p>
+          )}
         </div>
       )}
 
@@ -149,19 +166,30 @@ function Events() {
                 <td>
                   <div className="event-actions">
                     <button 
-                      className="edit-btn"
-                      onClick={() => handleEdit(event.id)}
-                      title="Editar evento"
+                      className="details-btn"
+                      onClick={() => handleViewDetails(event.id)}
+                      title="Ver detalhes e se inscrever"
                     >
-                      Editar
+                      Ver Detalhes
                     </button>
-                    <button 
-                      className="delete-btn"
-                      onClick={() => handleDeleteClick(event)}
-                      title="Deletar evento"
-                    >
-                      Deletar
-                    </button>
+                    {canCreateEvent && (
+                      <>
+                        <button 
+                          className="edit-btn"
+                          onClick={() => handleEdit(event.id)}
+                          title="Editar evento"
+                        >
+                          Editar
+                        </button>
+                        <button 
+                          className="delete-btn"
+                          onClick={() => handleDeleteClick(event)}
+                          title="Deletar evento"
+                        >
+                          Deletar
+                        </button>
+                      </>
+                    )}
                   </div>
                 </td>
               </tr>

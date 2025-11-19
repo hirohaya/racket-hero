@@ -20,6 +20,20 @@ const eventsAPI = {
   },
 
   /**
+   * Listar apenas os eventos nos quais o usuario esta registrado (jogadores)
+   * Para organizadores e admins, retorna todos os eventos
+   */
+  async listMyEvents() {
+    try {
+      const response = await api.get('/events/meus-eventos');
+      return response.data;
+    } catch (error) {
+      console.error('[EventsAPI] Erro ao listar meus eventos:', error);
+      throw error;
+    }
+  },
+
+  /**
    * Obter um evento por ID
    */
   async get(eventId) {

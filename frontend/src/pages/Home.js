@@ -6,6 +6,9 @@ import './Home.css';
 const Home = () => {
   const { isAuthenticated, user } = useAuth();
 
+  // Verificar permissões baseado no tipo de usuário
+  const canCreateEvent = user?.tipo === 'organizador' || user?.tipo === 'admin';
+
   return (
     <div className="home-container">
       <div className="home-hero">
@@ -19,9 +22,11 @@ const Home = () => {
               <Link to="/eventos" className="btn-primary">
                 Ver Eventos
               </Link>
-              <Link to="/novo-evento" className="btn-secondary">
-                Criar Novo Evento
-              </Link>
+              {canCreateEvent && (
+                <Link to="/novo-evento" className="btn-secondary">
+                  Criar Novo Evento
+                </Link>
+              )}
             </div>
           </div>
         ) : (

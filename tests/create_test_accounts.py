@@ -12,7 +12,7 @@ import requests
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'backend'))
 
 from database import SessionLocal, init_db
-from models.usuario import Usuario
+from models.usuario import Usuario, TipoUsuario
 from utils.security import hash_password
 
 # Contas de teste a criar
@@ -21,19 +21,22 @@ TEST_ACCOUNTS = [
         "name": "Admin Teste",
         "email": "admin@test.com",
         "password": "Senha123!",
-        "role": "admin"
+        "tipo": TipoUsuario.ADMIN,
+        "descricao": "🔐 Admin"
     },
     {
         "name": "Jogador Teste",
         "email": "jogador@test.com",
         "password": "Senha123!",
-        "role": "player"
+        "tipo": TipoUsuario.JOGADOR,
+        "descricao": "🎯 Jogador"
     },
     {
         "name": "Organizador Teste",
         "email": "organizador@test.com",
         "password": "Senha123!",
-        "role": "organizer"
+        "tipo": TipoUsuario.ORGANIZADOR,
+        "descricao": "📋 Organizador"
     }
 ]
 
@@ -63,15 +66,17 @@ def create_test_accounts_db():
                 nome=account["name"],
                 email=account["email"],
                 senha_hash=hash_password(account["password"]),
+                tipo=account["tipo"],
                 ativo=True
             )
             db.add(user)
             db.flush()
             
             print(f"[OK] Conta criada:")
+            print(f"    {account['descricao']}")
             print(f"    Email: {account['email']}")
             print(f"    Senha: {account['password']}")
-            print(f"    Nome: {account['name']}\n")
+            print(f"    Tipo: {account['tipo']}\n")
         
         db.commit()
         
@@ -81,9 +86,10 @@ def create_test_accounts_db():
         print("\nUse as seguintes credenciais para testar:\n")
         
         for account in TEST_ACCOUNTS:
-            print(f"  {account['name']}")
+            print(f"  {account['descricao']}")
             print(f"    📧 Email: {account['email']}")
-            print(f"    🔑 Senha: {account['password']}\n")
+            print(f"    🔑 Senha: {account['password']}")
+            print(f"    👤 Tipo: {account['tipo']}\n")
         
     except Exception as e:
         print(f"\n[ERROR] Erro ao criar contas: {e}")

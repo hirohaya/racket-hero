@@ -8,8 +8,10 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Debug from './pages/Debug';
 import Events from './pages/Events';
+import EventDetails from './pages/EventDetails';
 import CreateEvent from './pages/CreateEvent';
 import EditEvent from './pages/EditEvent';
+import EventMatches from './pages/EventMatches';
 import './App.css';
 
 function App() {
@@ -32,6 +34,14 @@ function App() {
               }
             />
             <Route
+              path="/evento/:eventId"
+              element={
+                <ProtectedRoute>
+                  <EventDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/novo-evento"
               element={
                 <ProtectedRoute>
@@ -44,6 +54,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <EditEvent />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/evento/:eventId/partidas"
+              element={
+                <ProtectedRoute>
+                  <EventMatches />
                 </ProtectedRoute>
               }
             />

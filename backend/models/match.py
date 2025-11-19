@@ -1,6 +1,7 @@
 """Modelo de Partida para Torneios de Ping-Pong."""
 
-from sqlalchemy import Column, Integer, ForeignKey
+from sqlalchemy import Column, Integer, ForeignKey, DateTime
+from sqlalchemy.sql import func
 from database import Base
 
 
@@ -14,6 +15,8 @@ class Match(Base):
         player_1_id: ID do primeiro jogador (FK)
         player_2_id: ID do segundo jogador (FK)
         winner_id: ID do vencedor (FK)
+        created_at: Timestamp de criação (auto-preenchido)
+        updated_at: Timestamp de atualização (auto-preenchido)
     """
     __tablename__ = "match"
 
@@ -22,3 +25,5 @@ class Match(Base):
     player_1_id = Column(Integer, ForeignKey("player.id"), index=True)
     player_2_id = Column(Integer, ForeignKey("player.id"), index=True)
     winner_id = Column(Integer, ForeignKey("player.id"), index=True)
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)

@@ -1,6 +1,6 @@
 # schemas/auth.py - Pydantic schemas para autenticação
 
-from pydantic import BaseModel, EmailStr, validator
+from pydantic import BaseModel, EmailStr, field_validator, ConfigDict
 from typing import Optional
 
 class RegistroRequest(BaseModel):
@@ -8,40 +8,46 @@ class RegistroRequest(BaseModel):
     email: EmailStr
     nome: str
     senha: str
+    tipo: Optional[str] = "usuario"  # Padrão: usuario (jogador), pode ser "organizador"
     
-    @validator('nome')
+    @field_validator('nome')
+    @classmethod
     def nome_minimo(cls, v):
         if len(v.strip()) < 3:
             raise ValueError('Nome deve ter no mínimo 3 caracteres')
         return v.strip()
     
-    @validator('senha')
+    @field_validator('senha')
+    @classmethod
     def senha_minima(cls, v):
         if len(v) < 8:
             raise ValueError('Senha deve ter no mínimo 8 caracteres')
         return v
     
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "email": "usuario@example.com",
                 "nome": "João Silva",
-                "senha": "senha123456"
+                "senha": "senha123456",
+                "tipo": "usuario"
             }
         }
+    )
 
 class LoginRequest(BaseModel):
     """Schema para requisição de login"""
     email: EmailStr
     senha: str
     
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "email": "usuario@example.com",
                 "senha": "senha123456"
             }
         }
+    )
 
 class TokenResponse(BaseModel):
     """Schema para resposta com tokens"""
@@ -51,8 +57,8 @@ class TokenResponse(BaseModel):
     expires_in: int  # segundos
     usuario: dict
     
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "access_token": "eyJhbGc...",
                 "refresh_token": "eyJhbGc...",
@@ -66,47 +72,52 @@ class TokenResponse(BaseModel):
                 }
             }
         }
+    )
 
 class RefreshTokenRequest(BaseModel):
     """Schema para refresh token"""
     refresh_token: str
     
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "refresh_token": "eyJhbGc..."
             }
         }
+    )
 
 class ForgotPasswordRequest(BaseModel):
     """Schema para solicitar reset de senha"""
     email: EmailStr
     
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "email": "usuario@example.com"
             }
         }
+    )
 
 class ResetPasswordRequest(BaseModel):
     """Schema para resetar senha"""
     token: str
     nova_senha: str
     
-    @validator('nova_senha')
+    @field_validator('nova_senha')
+    @classmethod
     def senha_minima(cls, v):
         if len(v) < 8:
             raise ValueError('Senha deve ter no mínimo 8 caracteres')
         return v
     
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "token": "eyJhbGc...",
                 "nova_senha": "novaSenha123456"
             }
         }
+    )
 
 class UsuarioResponse(BaseModel):
     """Schema para resposta de usuário"""
@@ -117,9 +128,9 @@ class UsuarioResponse(BaseModel):
     ativo: bool
     criado_em: str
     
-    class Config:
-        from_attributes = True
-        schema_extra = {
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_schema_extra={
             "example": {
                 "id": 1,
                 "email": "usuario@example.com",
@@ -129,16 +140,18 @@ class UsuarioResponse(BaseModel):
                 "criado_em": "2025-11-14T15:30:00"
             }
         }
+    )
 
 class ErrorResponse(BaseModel):
     """Schema para resposta de erro"""
     detail: str
     error_code: Optional[str] = None
     
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "detail": "Email já registrado",
                 "error_code": "EMAIL_EXISTS"
             }
         }
+    )

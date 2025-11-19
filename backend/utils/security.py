@@ -1,6 +1,6 @@
 # utils/security.py - Utilidades de segurança (JWT, bcrypt)
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 import os
 import bcrypt
@@ -77,8 +77,8 @@ def create_access_token(usuario_id: int, email: str, tipo: str) -> str:
         "usuario_id": usuario_id,
         "email": email,
         "tipo": tipo,
-        "iat": datetime.utcnow(),  # Issued at
-        "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+        "iat": datetime.now(timezone.utc),  # Issued at
+        "exp": datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
         "token_type": "access"
     }
     
@@ -99,8 +99,8 @@ def create_refresh_token(usuario_id: int, email: str) -> str:
     to_encode = {
         "usuario_id": usuario_id,
         "email": email,
-        "iat": datetime.utcnow(),
-        "exp": datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS),
+        "iat": datetime.now(timezone.utc),
+        "exp": datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS),
         "token_type": "refresh"
     }
     
@@ -140,10 +140,10 @@ def create_reset_password_token(usuario_id: int) -> tuple[str, datetime]:
     Returns:
         Tuple (token, expiration_datetime)
     """
-    expires = datetime.utcnow() + timedelta(minutes=30)
+    expires = datetime.now(timezone.utc) + timedelta(minutes=30)
     to_encode = {
         "usuario_id": usuario_id,
-        "iat": datetime.utcnow(),
+        "iat": datetime.now(timezone.utc),
         "exp": expires,
         "token_type": "password_reset"
     }
