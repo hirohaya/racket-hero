@@ -57,7 +57,8 @@ htmlcov/
 
 # Dependencies
 frontend/node_modules/
-frontend/package-lock.json
+# NOTE: package-lock.json is REQUIRED for Docker builds (npm ci)
+# So it's NOT ignored - it's versioned in Git
 frontend/yarn.lock
 
 # Environment variables
