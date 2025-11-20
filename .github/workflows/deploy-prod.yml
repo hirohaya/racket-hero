@@ -64,15 +64,11 @@ jobs:
           python -c "from backup_manager import BackupManager; BackupManager().create_backup()"
       
       - name: Deploy to Railway Production
-        uses: addnab/docker-run-action@v3
-        with:
-          image: railwayapp/railway:latest
-          options: -e RAILWAY_TOKEN=${{ secrets.RAILWAY_TOKEN_PROD }}
-          run: |
-            railway up --service backend --service frontend \
-              --project racket-hero-prod \
-              --environment production \
-              --no-cache
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN_PROD }}
+        run: |
+          npm install -g @railway/cli
+          railway up --project racket-hero --environment production
       
       - name: Wait for deployment stability
         run: sleep 40

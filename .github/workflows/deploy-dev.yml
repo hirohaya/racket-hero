@@ -63,14 +63,11 @@ jobs:
           CI: false
       
       - name: Deploy to Railway Dev
-        uses: addnab/docker-run-action@v3
-        with:
-          image: railwayapp/railway:latest
-          options: -e RAILWAY_TOKEN=${{ secrets.RAILWAY_TOKEN_DEV }}
-          run: |
-            railway up --service backend --service frontend \
-              --project racket-hero-dev \
-              --environment development
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN_DEV }}
+        run: |
+          npm install -g @railway/cli
+          railway up --project racket-hero-dev --environment development
       
       - name: Wait for deployment
         run: sleep 30
