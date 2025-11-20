@@ -1,10 +1,12 @@
 /**
  * PlayerManagement.js - Modal para gerenciar jogadores do evento
  * Permite adicionar e remover jogadores (apenas para organizadores)
+ * Inclui busca dinâmica de jogadores cadastrados
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import playersAPI from '../services/players';
+import PlayerSearchForm from './PlayerSearchForm';
 import '../styles/PlayerManagement.css';
 
 function PlayerManagement({ eventId, isOpen, onClose, onPlayersUpdated, isOrganizer }) {
@@ -14,6 +16,44 @@ function PlayerManagement({ eventId, isOpen, onClose, onPlayersUpdated, isOrgani
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [showSearchMode, setShowSearchMode] = useState(true);
+  const [eventPlayers, setEventPlayers] = useState([]);
+  const [playerIds, setPlayerIds] = useState([]);
+
+  // Carregar jogadores do evento ao abrir o modal
+  useEffect(() => {
+    if (isOpen) {
+      loadEventPlayers();
+    }
+  }, [isOpen, eventId]);
+
+  const loadEventPlayers = async () => {
+    try {
+      const players = await playersAPI.listEventPlayers(eventId);
+      setEventPlayers(players);
+      setPlayerIds(players.map(p => p.id || p.user_id));
+    } catch (err) {
+      console.error('[PlayerManagement] Erro ao carregar jogadores:', err);
+    }
+  };
+
+  const handleSelectFromSearch = async (user) => {
+    // Auto-preencher o formulário com o jogador selecionado
+    setNewPlayerName(user.name);
+    setNewPlayerClub(''); // Limpar clube (pode ser preenchido depois)
+    setNewPlayerElo('1600'); // Usar Elo padrão
+    setShowSearchMode(false); // Mostrar o resto do formulário
+    setError(null);
+  };
+
+  const handleAddNewManually = () => {
+    // Mudar para modo de entrada manual
+    setShowSearchMode(false);
+    setNewPlayerName('');
+    setNewPlayerClub('');
+    setNewPlayerElo('1600');
+    setError(null);
+  };
 
   const handleAddPlayer = async (e) => {
     e.preventDefault();
@@ -42,10 +82,12 @@ function PlayerManagement({ eventId, isOpen, onClose, onPlayersUpdated, isOrgani
       setNewPlayerClub('');
       setNewPlayerElo('1600');
       
-      // Recarregar lista de jogadores
+      // Recarregar lista de jogadores e atualizar lista de IDs
       setTimeout(() => {
+        loadEventPlayers();
         onPlayersUpdated();
         setSuccess(null);
+        setShowSearchMode(true); // Voltar para o modo de busca
       }, 1500);
     } catch (err) {
       console.error('[PlayerManagement] Erro ao adicionar jogador:', err);
@@ -81,65 +123,96 @@ function PlayerManagement({ eventId, isOpen, onClose, onPlayersUpdated, isOrgani
           </div>
         )}
 
-        <form onSubmit={handleAddPlayer} className="player-form">
-          <div className="form-group">
-            <label htmlFor="playerName">Nome do Jogador *</label>
-            <input
-              id="playerName"
-              type="text"
-              value={newPlayerName}
-              onChange={(e) => setNewPlayerName(e.target.value)}
-              placeholder="Ex: João Silva"
-              disabled={loading}
-              required
+        {/* Modo Busca */}
+        {showSearchMode && (
+          <div className="search-mode">
+            <p className="search-mode-title">🔍 Procure um jogador registrado:</p>
+            <PlayerSearchForm 
+              onSelectPlayer={handleSelectFromSearch}
+              onAddNew={handleAddNewManually}
+              excludePlayerIds={playerIds}
+              isOrganizer={isOrganizer}
             />
           </div>
+        )}
 
-          <div className="form-group">
-            <label htmlFor="playerClub">Clube</label>
-            <input
-              id="playerClub"
-              type="text"
-              value={newPlayerClub}
-              onChange={(e) => setNewPlayerClub(e.target.value)}
-              placeholder="Ex: Clube do Tenis"
-              disabled={loading}
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="playerElo">Pontuação Inicial</label>
-            <input
-              id="playerElo"
-              type="number"
-              value={newPlayerElo}
-              onChange={(e) => setNewPlayerElo(e.target.value)}
-              placeholder="1600"
-              min="0"
-              max="3000"
-              disabled={loading}
-            />
-            <small>Padrão: 1600</small>
-          </div>
-
-          <div className="modal-actions">
-            <button
+        {/* Modo Formulário */}
+        {!showSearchMode && (
+          <form onSubmit={handleAddPlayer} className="player-form">
+            <button 
               type="button"
-              className="btn-cancel"
-              onClick={onClose}
+              className="btn-back-to-search"
+              onClick={() => {
+                setShowSearchMode(true);
+                setNewPlayerName('');
+                setNewPlayerClub('');
+                setNewPlayerElo('1600');
+                setError(null);
+              }}
               disabled={loading}
             >
-              Cancelar
+              ← Voltar para busca
             </button>
-            <button
-              type="submit"
-              className="btn-submit"
-              disabled={loading}
-            >
-              {loading ? 'Adicionando...' : 'Adicionar Jogador'}
-            </button>
-          </div>
-        </form>
+
+            <div className="form-group">
+              <label htmlFor="playerName">Nome do Jogador *</label>
+              <input
+                id="playerName"
+                type="text"
+                value={newPlayerName}
+                onChange={(e) => setNewPlayerName(e.target.value)}
+                placeholder="Ex: João Silva"
+                disabled={loading}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="playerClub">Clube</label>
+              <input
+                id="playerClub"
+                type="text"
+                value={newPlayerClub}
+                onChange={(e) => setNewPlayerClub(e.target.value)}
+                placeholder="Ex: Clube do Tenis"
+                disabled={loading}
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="playerElo">Pontuação Inicial</label>
+              <input
+                id="playerElo"
+                type="number"
+                value={newPlayerElo}
+                onChange={(e) => setNewPlayerElo(e.target.value)}
+                placeholder="1600"
+                min="0"
+                max="3000"
+                disabled={loading}
+              />
+              <small>Padrão: 1600</small>
+            </div>
+
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="btn-cancel"
+                onClick={onClose}
+                disabled={loading}
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="btn-submit"
+                disabled={loading}
+              >
+                {loading ? 'Adicionando...' : 'Adicionar Jogador'}
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );

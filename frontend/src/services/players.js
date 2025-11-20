@@ -121,6 +121,23 @@ const playersAPI = {
       console.error('[PlayersAPI] Erro ao remover jogador:', error);
       throw error;
     }
+  },
+
+  /**
+   * Buscar usuários cadastrados pelo nome
+   * @param {string} searchTerm - Termo para buscar
+   */
+  async searchUsuarios(searchTerm = '') {
+    try {
+      const response = await api.get('/players/search/usuarios', {
+        params: { search: searchTerm }
+      });
+      console.log('[PlayersAPI] Usuários encontrados:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('[PlayersAPI] Erro ao buscar usuários:', error);
+      throw error;
+    }
   }
 };
 

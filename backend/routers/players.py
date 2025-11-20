@@ -197,6 +197,44 @@ async def list_event_players(event_id: int):
     finally:
         session.close()
 
+@router.get("/search/usuarios", response_model=List[dict])
+async def search_usuarios(
+    search: str = "",
+    usuario: Usuario = Depends(require_permission(Permissao.VER_EVENTOS))
+):
+    """
+    Buscar usuários cadastrados pelo nome (para adicionar como jogadores).
+    
+    **Parameters**:
+    - search: Texto para buscar no nome do usuário (case-insensitive)
+    
+    **Response**: Lista de usuários encontrados com dados básicos
+    """
+    session = SessionLocal()
+    try:
+        # Buscar usuários pelo nome
+        query = session.query(Usuario).filter(Usuario.ativo == True)
+        
+        if search.strip():
+            query = query.filter(Usuario.nome.ilike(f"%{search.strip()}%"))
+        
+        usuarios = query.limit(20).all()
+        
+        return [
+            {
+                "id": u.id,
+                "nome": u.nome,
+                "email": u.email,
+                "tipo": u.tipo
+            }
+            for u in usuarios
+        ]
+    except Exception as e:
+        log.error(f"Erro ao buscar usuários: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+    finally:
+        session.close()
+
 @router.delete("/eventos/{event_id}/inscricao", response_model=dict)
 async def unregister_user_from_event(
     event_id: int,

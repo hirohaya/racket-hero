@@ -1,0 +1,318 @@
+/**
+ * PlayerSearchForm.css - Estilos para o formulário de busca de jogadores
+ * Inclui dropdown com resultados, loading state e mensagens de erro
+ */
+
+.player-search-form {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+/* Contenedor da busca */
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  padding-right: 2.5rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  background-color: #f9f9ff;
+}
+
+.search-input::placeholder {
+  color: #999;
+}
+
+/* Spinner de loading */
+.search-spinner {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  color: #007bff;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Mensagem de erro */
+.search-error {
+  margin-top: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: #fee;
+  color: #c33;
+  border-radius: 0.4rem;
+  font-size: 0.9rem;
+  border-left: 4px solid #c33;
+}
+
+/* Dropdown de resultados */
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.5rem;
+  background-color: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1000;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header dos resultados */
+.results-header {
+  padding: 0.75rem 1rem;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.results-count {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Lista de resultados */
+.results-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.result-item {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.result-item:hover {
+  background-color: #f9f9ff;
+  padding-left: 1.25rem;
+}
+
+.result-item:last-child {
+  border-bottom: none;
+}
+
+/* Info do usuário */
+.result-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.result-name {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.result-email {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.result-tipo {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.3rem;
+  font-weight: 500;
+}
+
+.result-tipo.jogador {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.result-tipo.organizador {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+.result-tipo.admin {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
+/* Indicador de ação */
+.result-action {
+  color: #007bff;
+  font-weight: 600;
+  opacity: 0;
+  margin-left: 1rem;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+}
+
+.result-item:hover .result-action {
+  opacity: 1;
+}
+
+/* Footer com botão adicionar novo */
+.results-footer {
+  padding: 0.75rem 1rem;
+  background-color: #f9f9f9;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* Mensagem sem resultados */
+.no-results {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: #999;
+}
+
+.no-results p {
+  margin: 0 0 1rem 0;
+  font-size: 0.95rem;
+}
+
+/* Botão de adicionar novo jogador */
+.btn-add-new {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.btn-add-new:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+.btn-add-new:active {
+  transform: translateY(0);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .search-results {
+    max-height: 300px;
+  }
+
+  .result-email,
+  .result-tipo {
+    display: none;
+  }
+
+  .result-user-info {
+    gap: 0.1rem;
+  }
+
+  .result-item {
+    padding: 0.6rem 0.75rem;
+  }
+
+  .result-item:hover {
+    padding-left: 1rem;
+  }
+
+  .result-action {
+    margin-left: 0.5rem;
+  }
+}
+
+/* Dark mode support (se implementado no futuro) */
+@media (prefers-color-scheme: dark) {
+  .search-input {
+    background-color: #1e1e1e;
+    border-color: #404040;
+    color: #e0e0e0;
+  }
+
+  .search-input:focus {
+    border-color: #4a9eff;
+    background-color: #252525;
+    box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.1);
+  }
+
+  .search-results {
+    background-color: #2a2a2a;
+    border-color: #404040;
+  }
+
+  .results-header {
+    background-color: #1e1e1e;
+    border-color: #404040;
+    color: #999;
+  }
+
+  .results-count {
+    color: #e0e0e0;
+  }
+
+  .result-item {
+    border-color: #3a3a3a;
+  }
+
+  .result-item:hover {
+    background-color: #333333;
+  }
+
+  .result-name {
+    color: #e0e0e0;
+  }
+
+  .result-email {
+    color: #999;
+  }
+
+  .results-footer {
+    background-color: #1e1e1e;
+    border-color: #404040;
+  }
+
+  .no-results {
+    color: #999;
+  }
+}
