@@ -68,7 +68,8 @@ jobs:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN_PROD }}
         run: |
           npm install -g @railway/cli
-          railway up --project racket-hero --environment production
+          railway link --project racket-hero
+          railway up -e production
       
       - name: Wait for deployment stability
         run: sleep 40
