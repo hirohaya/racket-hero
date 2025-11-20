@@ -53,3 +53,86 @@ def init_db():
     from models.match import Match  # noqa
     
     Base.metadata.create_all(bind=engine)
+    
+    # Seed test data in development/staging environments (if database is empty)
+    _seed_test_data_if_empty()
+
+
+def _seed_test_data_if_empty():
+    """Seed test data if database is empty (for dev/staging)."""
+    try:
+        from models.usuario import Usuario, TipoUsuario
+        from models.event import Event
+        from models.player import Player
+        from utils.security import hash_password
+        import os
+        
+        db = SessionLocal()
+        
+        # Check if organizador already exists
+        organizador = db.query(Usuario).filter(
+            Usuario.email == "organizador@test.com"
+        ).first()
+        
+        if organizador:
+            # Already seeded
+            db.close()
+            return
+        
+        # Check if we're in a dev environment
+        env = os.getenv("ENVIRONMENT", "local").lower()
+        if env not in ["local", "development", "staging", "dev"]:
+            db.close()
+            return
+        
+        try:
+            # Create test Organizador
+            organizador = Usuario(
+                email="organizador@test.com",
+                nome="Organizador Teste",
+                senha_hash=hash_password("Senha123!"),
+                tipo=TipoUsuario.ORGANIZADOR,
+                ativo=True
+            )
+            db.add(organizador)
+            db.flush()
+            
+            # Create test Jogador
+            jogador = Usuario(
+                email="jogador@test.com",
+                nome="Jogador Teste",
+                senha_hash=hash_password("Senha123!"),
+                tipo=TipoUsuario.JOGADOR,
+                ativo=True
+            )
+            db.add(jogador)
+            db.flush()
+            
+            # Create test Event
+            evento = Event(
+                name="Torneio Teste",
+                date="2025-12-01",
+                time="14:00",
+                active=True,
+                usuario_id=organizador.id
+            )
+            db.add(evento)
+            db.flush()
+            
+            # Add jogador to event
+            player = Player(
+                usuario_id=jogador.id,
+                event_id=evento.id,
+                elo_rating=1600
+            )
+            db.add(player)
+            
+            db.commit()
+            print("[OK] Test data seeded successfully")
+        except Exception as e:
+            db.rollback()
+            print(f"[WARNING] Failed to seed test data: {e}")
+        finally:
+            db.close()
+    except Exception as e:
+        print(f"[WARNING] Error in auto-seed: {e}")
