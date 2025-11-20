@@ -87,7 +87,7 @@ async def health_check_db(db: Session = Depends(get_db)):
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
 
-# Incluir routers
+# Incluir routers (ANTES das rotas estáticas)
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(events.router, prefix="/api/events", tags=["Events"])
 app.include_router(evento_organizadores.router)  # Já tem prefix /events
@@ -109,7 +109,7 @@ scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
 log.info("[OK] Agendador de backup iniciado (3:00 AM diariamente)")
 
-# Servir aplicação React (build)
+# Servir aplicação React (build) - DEPOIS das rotas de API
 frontend_build_path = Path(__file__).parent.parent / "frontend" / "build"
 index_file = frontend_build_path / "index.html"
 

@@ -1,9 +1,24 @@
 import axios from 'axios';
 import logger from './logger';
 
-// Usar URL relativa /api por padrão (funciona em qualquer domínio)
-// Em desenvolvimento, pode ser sobrescrito via REACT_APP_API_URL env var
-const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
+// Definir URL base da API
+// Em desenvolvimento: http://localhost:8000/api
+// Em produção: pode ser sobrescrito via REACT_APP_API_URL env var
+const getApiBaseUrl = () => {
+  if (process.env.REACT_APP_API_URL) {
+    return process.env.REACT_APP_API_URL;
+  }
+  
+  // Em desenvolvimento, apontar explicitamente para o backend
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'http://localhost:8000/api';
+  }
+  
+  // Em produção, usar a mesma origem com /api
+  return `${window.location.origin}/api`;
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -51,7 +66,7 @@ api.interceptors.response.use(
           throw new Error('Sem refresh token');
         }
 
-        const response = await axios.post(`${API_BASE_URL}/api/auth/refresh`, {
+        const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
           refresh_token: refreshToken,
         });
 
