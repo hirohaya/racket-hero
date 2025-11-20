@@ -87,22 +87,6 @@ const Login = () => {
                 type="button"
                 className="test-account-btn"
                 onClick={() => {
-                  setEmail('admin@test.com');
-                  setSenha('Senha123!');
-                  setError('');
-                }}
-              >
-                <span className="account-role">🔐 Admin</span>
-                <span className="account-email">admin@test.com</span>
-                <span className="account-password">Senha123!</span>
-              </button>
-            </div>
-
-            <div className="test-account">
-              <button
-                type="button"
-                className="test-account-btn"
-                onClick={() => {
                   setEmail('jogador@test.com');
                   setSenha('Senha123!');
                   setError('');
