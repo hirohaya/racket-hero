@@ -103,8 +103,9 @@ async def seed_data(db: Session = Depends(get_db)):
         # Add jogador to evento
         player = Player(
             usuario_id=jogador.id,
-            evento_id=evento.id,
-            elo_rating=1600
+            event_id=evento.id,
+            name="Jogador Teste",
+            initial_elo=1600
         )
         db.add(player)
         

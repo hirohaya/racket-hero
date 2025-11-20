@@ -140,7 +140,8 @@ def _seed_test_data_if_empty():
             player = Player(
                 usuario_id=jogador.id,
                 event_id=evento.id,
-                elo_rating=1600
+                name="Jogador Teste",
+                initial_elo=1600
             )
             db.add(player)
             print("[DEBUG] Player adicionado")
