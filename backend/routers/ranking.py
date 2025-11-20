@@ -12,7 +12,7 @@ log = get_logger("ranking_router")
 
 router = APIRouter()
 
-@router.get("/eventos/{event_id}/ranking", response_model=List[dict])
+@router.get("/{event_id}", response_model=List[dict])
 async def get_ranking(event_id: int):
     """Obter ranking de um evento (ordenado por Elo)"""
     session = SessionLocal()
