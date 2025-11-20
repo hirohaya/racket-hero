@@ -11,7 +11,7 @@ import logging
 import atexit
 
 from database import init_db, get_db, engine
-from routers import auth, events, players, matches, ranking, evento_organizadores, admin
+from routers import auth, events, players, matches, ranking, evento_organizadores, admin, seed
 from logger_production import setup_logging, get_logger
 from backup_manager import backup_endpoint_handler
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -96,6 +96,7 @@ app.include_router(players.router, prefix="/api/players", tags=["Players"])
 app.include_router(matches.router, prefix="/api/matches", tags=["Matches"])
 app.include_router(ranking.router, prefix="/api/ranking", tags=["Ranking"])
 app.include_router(admin.router, tags=["Admin"])
+app.include_router(seed.router, tags=["Development"])
 
 # Agendar backups diários (3 da manhã)
 scheduler = BackgroundScheduler()
