@@ -79,9 +79,16 @@ def _seed_test_data_if_empty():
             db.close()
             return
         
-        # Check if we're in a dev environment
-        env = os.getenv("ENVIRONMENT", "local").lower()
-        if env not in ["local", "development", "staging", "dev"]:
+        # Only seed if DATABASE_URL indicates dev/staging (not production)
+        db_url = os.getenv("DATABASE_URL", "sqlite:///./racket_hero.db")
+        is_prod = "postgres" in db_url and "railway" in db_url
+        
+        # Also check if ENVIRONMENT is explicitly set to production
+        env = os.getenv("ENVIRONMENT", "").lower()
+        is_prod = is_prod or (env == "production")
+        
+        if is_prod:
+            # Don't seed in production
             db.close()
             return
         
