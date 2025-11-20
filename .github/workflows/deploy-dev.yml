@@ -67,8 +67,9 @@ jobs:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN_DEV }}
         run: |
           npm install -g @railway/cli
-          echo "racket-hero-dev" | railway link -p racket-hero-dev -e development
-          railway up --detach
+          mkdir -p ~/.railway
+          echo "{\"selectedProjectId\":\"racket-hero-dev\",\"selectedEnvironmentId\":\"development\"}" > ~/.railway/config.json
+          railway up --detach -c
       
       - name: Wait for deployment
         run: sleep 30
