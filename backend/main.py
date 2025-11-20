@@ -66,7 +66,8 @@ async def health_check_db(db: Session = Depends(get_db)):
     """Verificar saúde da API e do banco de dados"""
     try:
         # Testar conexão com o banco
-        db.execute("SELECT 1")
+        from sqlalchemy import text
+        db.execute(text("SELECT 1"))
         db_status = "ok"
         db_message = "Database connection successful"
     except Exception as e:
