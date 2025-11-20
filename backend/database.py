@@ -67,32 +67,39 @@ def _seed_test_data_if_empty():
         from utils.security import hash_password
         import os
         
+        print("[DEBUG] Auto-seed function called")
+        
         db = SessionLocal()
         
-        # Check if organizador already exists
-        organizador = db.query(Usuario).filter(
-            Usuario.email == "organizador@test.com"
-        ).first()
-        
-        if organizador:
-            # Already seeded
-            db.close()
-            return
-        
-        # Only seed if DATABASE_URL indicates dev/staging (not production)
-        db_url = os.getenv("DATABASE_URL", "sqlite:///./racket_hero.db")
-        is_prod = "postgres" in db_url and "railway" in db_url
-        
-        # Also check if ENVIRONMENT is explicitly set to production
-        env = os.getenv("ENVIRONMENT", "").lower()
-        is_prod = is_prod or (env == "production")
-        
-        if is_prod:
-            # Don't seed in production
-            db.close()
-            return
-        
         try:
+            # Check if organizador already exists
+            organizador = db.query(Usuario).filter(
+                Usuario.email == "organizador@test.com"
+            ).first()
+            
+            if organizador:
+                # Already seeded
+                print("[DEBUG] Test data already exists, skipping seed")
+                return
+            
+            # Get database URL
+            db_url = os.getenv("DATABASE_URL", "sqlite:///./racket_hero.db")
+            print(f"[DEBUG] DATABASE_URL: {db_url[:50]}...")
+            
+            # Skip production environments
+            # Production typically has postgres + railway or explicit PROD env var
+            env = os.getenv("NODE_ENV", os.getenv("ENVIRONMENT", "development")).lower()
+            is_production = (env == "production")
+            
+            print(f"[DEBUG] Environment: {env}, Is Production: {is_production}")
+            
+            if is_production:
+                print("[DEBUG] Skipping seed in production")
+                return
+            
+            # Seed test data
+            print("[DEBUG] Creating test data...")
+            
             # Create test Organizador
             organizador = Usuario(
                 email="organizador@test.com",
@@ -103,6 +110,7 @@ def _seed_test_data_if_empty():
             )
             db.add(organizador)
             db.flush()
+            print("[DEBUG] Organizador criado")
             
             # Create test Jogador
             jogador = Usuario(
@@ -114,6 +122,7 @@ def _seed_test_data_if_empty():
             )
             db.add(jogador)
             db.flush()
+            print("[DEBUG] Jogador criado")
             
             # Create test Event
             evento = Event(
@@ -125,6 +134,7 @@ def _seed_test_data_if_empty():
             )
             db.add(evento)
             db.flush()
+            print("[DEBUG] Event criado")
             
             # Add jogador to event
             player = Player(
@@ -133,13 +143,13 @@ def _seed_test_data_if_empty():
                 elo_rating=1600
             )
             db.add(player)
+            print("[DEBUG] Player adicionado")
             
             db.commit()
             print("[OK] Test data seeded successfully")
-        except Exception as e:
-            db.rollback()
-            print(f"[WARNING] Failed to seed test data: {e}")
         finally:
             db.close()
     except Exception as e:
-        print(f"[WARNING] Error in auto-seed: {e}")
+        import traceback
+        print(f"[ERROR] Error in auto-seed: {e}")
+        traceback.print_exc()
