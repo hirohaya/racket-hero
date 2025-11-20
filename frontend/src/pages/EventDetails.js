@@ -9,6 +9,7 @@ import { useAuth } from '../context/AuthContext';
 import eventsAPI from '../services/events';
 import playersAPI from '../services/players';
 import rankingAPI from '../services/ranking';
+import PlayerManagement from '../components/PlayerManagement';
 import './EventDetails.css';
 
 function EventDetails() {
@@ -26,11 +27,17 @@ function EventDetails() {
   const [success, setSuccess] = useState(null);
   const [expandedPlayersSection, setExpandedPlayersSection] = useState(true);
   const [expandedRankingSection, setExpandedRankingSection] = useState(true);
+  const [showPlayerManagement, setShowPlayerManagement] = useState(false);
+  const [isOrganizer, setIsOrganizer] = useState(false);
 
   // Carregar detalhes do evento e lista de jogadores
   useEffect(() => {
     loadEventDetails();
-  }, [eventId]);
+    // Verificar se usuário é organizador
+    if (user) {
+      setIsOrganizer(user.tipo === 'organizador' || user.tipo === 'admin');
+    }
+  }, [eventId, user]);
 
   const loadEventDetails = async () => {
     try {
@@ -116,6 +123,30 @@ function EventDetails() {
       setError(err.message || 'Erro ao cancelar inscrição');
     } finally {
       setRegistering(false);
+    }
+  };
+
+  const handleRemovePlayer = async (playerId, playerName) => {
+    if (!window.confirm(`Tem certeza que deseja remover '${playerName}' do evento?`)) {
+      return;
+    }
+
+    try {
+      setError(null);
+      console.log('[EventDetails] Removendo jogador:', playerId);
+      
+      await playersAPI.removeFromEvent(playerId);
+      
+      setSuccess(`Jogador '${playerName}' removido com sucesso!`);
+      
+      // Recarregar lista de jogadores
+      await loadEventDetails();
+      
+      // Limpar mensagem após 3 segundos
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err) {
+      console.error('[EventDetails] Erro ao remover jogador:', err);
+      setError(err.response?.data?.detail || 'Erro ao remover jogador');
     }
   };
 
@@ -242,6 +273,16 @@ function EventDetails() {
           </span>
         </div>
 
+        {/* Botão de Adicionar Jogador (apenas para organizadores) */}
+        {isOrganizer && (
+          <button
+            className="btn-add-player"
+            onClick={() => setShowPlayerManagement(true)}
+          >
+            ➕ Adicionar Jogador
+          </button>
+        )}
+
         {expandedPlayersSection && (
           <>
             {players.length === 0 ? (
@@ -255,6 +296,7 @@ function EventDetails() {
                     <th>Nome</th>
                     <th>Clube</th>
                     <th>Pontuação</th>
+                    {isOrganizer && <th>Ações</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -268,6 +310,17 @@ function EventDetails() {
                       </td>
                       <td>{player.club || '-'}</td>
                       <td>{player.initial_elo.toFixed(1)}</td>
+                      {isOrganizer && (
+                        <td className="action-cell">
+                          <button
+                            className="btn-remove-player"
+                            onClick={() => handleRemovePlayer(player.id, player.name)}
+                            title="Remover jogador"
+                          >
+                            ✕
+                          </button>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
@@ -276,6 +329,15 @@ function EventDetails() {
           </>
         )}
       </div>
+
+      {/* Modal de Gerenciamento de Jogadores */}
+      <PlayerManagement
+        eventId={eventId}
+        isOpen={showPlayerManagement}
+        onClose={() => setShowPlayerManagement(false)}
+        onPlayersUpdated={loadEventDetails}
+        isOrganizer={isOrganizer}
+      />
 
       {/* Ranking */}
       <div className="ranking-section">

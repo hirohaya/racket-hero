@@ -4,15 +4,23 @@ players.py - Router para gerenciar jogadores
 
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List
+from pydantic import BaseModel
 from database import SessionLocal
 from models import Player
-from models.usuario import Usuario
+from models.usuario import Usuario, TipoUsuario
 from utils.permissions import require_permission, Permissao
 from logger import get_logger
 
 log = get_logger("players_router")
 
 router = APIRouter()
+
+# Schemas
+class AddPlayerRequest(BaseModel):
+    """Schema para adicionar jogador a um evento"""
+    name: str
+    club: str = None
+    initial_elo: float = 1600.0
 
 @router.post("", response_model=dict, status_code=201)
 async def create_player(player_data: dict):
@@ -224,6 +232,152 @@ async def unregister_user_from_event(
     except Exception as e:
         session.rollback()
         log.error(f"Erro ao remover usuário do evento: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+    finally:
+        session.close()
+
+@router.post("/eventos/{event_id}/add", response_model=dict, status_code=201)
+async def add_player_to_event(
+    event_id: int,
+    player_data: AddPlayerRequest,
+    usuario: Usuario = Depends(require_permission(Permissao.EDITAR_EVENTO))
+):
+    """
+    Adicionar jogador a um evento (apenas para organizadores/admins).
+    
+    **Permissões**:
+    - Apenas organizador ou admin do evento
+    
+    **Parameters**:
+    - event_id: ID do evento
+    - name: Nome do jogador
+    - club: Clube (opcional)
+    - initial_elo: Pontuação inicial (default: 1600)
+    
+    **Response**: Dados do jogador criado
+    """
+    session = SessionLocal()
+    try:
+        from models import Event
+        
+        # Verificar se evento existe
+        event = session.query(Event).filter(Event.id == event_id).first()
+        if not event:
+            raise HTTPException(status_code=404, detail="Evento não encontrado")
+        
+        # Verificar permissão: apenas organizador do evento ou admin
+        if usuario.tipo != TipoUsuario.ADMIN:
+            # Verificar se é organizador deste evento
+            from models import EventoOrganizador
+            is_organizer = session.query(EventoOrganizador).filter(
+                EventoOrganizador.event_id == event_id,
+                EventoOrganizador.usuario_id == usuario.id
+            ).first()
+            
+            if not is_organizer:
+                raise HTTPException(
+                    status_code=403,
+                    detail="Você não tem permissão para adicionar jogadores a este evento"
+                )
+        
+        # Verificar se jogador com mesmo nome já existe no evento
+        existing = session.query(Player).filter(
+            Player.event_id == event_id,
+            Player.name == player_data.name
+        ).first()
+        
+        if existing:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Jogador '{player_data.name}' já está registrado neste evento"
+            )
+        
+        # Criar jogador
+        player = Player(
+            event_id=event_id,
+            name=player_data.name,
+            club=player_data.club,
+            initial_elo=player_data.initial_elo,
+            usuario_id=None  # Jogador adicionado manualmente não está vinculado a usuário
+        )
+        session.add(player)
+        session.commit()
+        session.refresh(player)
+        
+        log.info(f"[{usuario.email}] Adicionou jogador '{player.name}' ao evento {event_id}")
+        
+        return {
+            "id": player.id,
+            "event_id": player.event_id,
+            "name": player.name,
+            "club": player.club,
+            "initial_elo": player.initial_elo,
+            "usuario_id": player.usuario_id,
+            "message": f"Jogador '{player.name}' adicionado com sucesso ao evento"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        session.rollback()
+        log.error(f"Erro ao adicionar jogador ao evento: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+    finally:
+        session.close()
+
+@router.delete("/{player_id}", response_model=dict)
+async def delete_player(
+    player_id: int,
+    usuario: Usuario = Depends(require_permission(Permissao.EDITAR_EVENTO))
+):
+    """
+    Remover jogador de um evento (apenas para organizadores/admins).
+    
+    **Permissões**:
+    - Admin ou organizador do evento ao qual o jogador pertence
+    
+    **Parameters**:
+    - player_id: ID do jogador a remover
+    
+    **Response**: Confirmação da remoção
+    """
+    session = SessionLocal()
+    try:
+        # Encontrar jogador
+        player = session.query(Player).filter(Player.id == player_id).first()
+        if not player:
+            raise HTTPException(status_code=404, detail="Jogador não encontrado")
+        
+        # Verificar permissão: admin ou organizador do evento
+        if usuario.tipo != TipoUsuario.ADMIN:
+            from models import EventoOrganizador
+            is_organizer = session.query(EventoOrganizador).filter(
+                EventoOrganizador.event_id == player.event_id,
+                EventoOrganizador.usuario_id == usuario.id
+            ).first()
+            
+            if not is_organizer:
+                raise HTTPException(
+                    status_code=403,
+                    detail="Você não tem permissão para remover jogadores deste evento"
+                )
+        
+        player_name = player.name
+        event_id = player.event_id
+        
+        session.delete(player)
+        session.commit()
+        
+        log.info(f"[{usuario.email}] Removeu jogador '{player_name}' do evento {event_id}")
+        
+        return {
+            "message": f"Jogador '{player_name}' removido com sucesso",
+            "player_id": player_id
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        session.rollback()
+        log.error(f"Erro ao remover jogador: {e}")
         raise HTTPException(status_code=400, detail=str(e))
     finally:
         session.close()

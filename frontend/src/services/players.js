@@ -90,6 +90,37 @@ const playersAPI = {
       console.error('[PlayersAPI] Erro ao obter jogador:', error);
       throw error;
     }
+  },
+
+  /**
+   * Adicionar jogador a um evento (apenas para organizadores)
+   * @param {number} eventId - ID do evento
+   * @param {object} playerData - Dados do jogador { name, club, initial_elo }
+   */
+  async addToEvent(eventId, playerData) {
+    try {
+      const response = await api.post(`/players/eventos/${eventId}/add`, playerData);
+      console.log('[PlayersAPI] Jogador adicionado:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('[PlayersAPI] Erro ao adicionar jogador:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Remover jogador de um evento (apenas para organizadores)
+   * @param {number} playerId - ID do jogador
+   */
+  async removeFromEvent(playerId) {
+    try {
+      const response = await api.delete(`/players/${playerId}`);
+      console.log('[PlayersAPI] Jogador removido:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('[PlayersAPI] Erro ao remover jogador:', error);
+      throw error;
+    }
   }
 };
 
