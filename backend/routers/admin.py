@@ -183,3 +183,86 @@ async def system_health(admin: bool = Depends(get_current_admin_user)):
     except Exception as e:
         logger.error(f"Erro no health check: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/seed-test-accounts", status_code=201)
+async def seed_test_accounts(db: Session = Depends(get_db)):
+    """
+    Criar contas de teste no banco de dados.
+    
+    **Endpoints**: Jogador e Organizador
+    
+    **Response**:
+    - `success`: Se as contas foram criadas
+    - `message`: Mensagem descritiva
+    - `accounts`: Lista de contas criadas
+    """
+    from models.usuario import TipoUsuario
+    from utils.security import hash_password
+    
+    try:
+        logger.info("Iniciando seed de contas de teste")
+        
+        # Dados das contas de teste
+        test_accounts = [
+            {
+                "email": "jogador@test.com",
+                "nome": "Jogador Teste",
+                "senha": "Senha123!",
+                "tipo": TipoUsuario.JOGADOR
+            },
+            {
+                "email": "organizador@test.com",
+                "nome": "Organizador Teste",
+                "senha": "Senha123!",
+                "tipo": TipoUsuario.ORGANIZADOR
+            }
+        ]
+        
+        created_accounts = []
+        
+        # Criar cada conta
+        for account in test_accounts:
+            # Verificar se já existe
+            usuario_existente = db.query(Usuario).filter(
+                Usuario.email == account["email"]
+            ).first()
+            
+            if usuario_existente:
+                logger.info(f"Conta já existe: {account['email']} (id: {usuario_existente.id})")
+                created_accounts.append({
+                    "email": usuario_existente.email,
+                    "tipo": usuario_existente.tipo,
+                    "status": "already_exists"
+                })
+                continue
+            
+            # Criar nova conta
+            novo_usuario = Usuario(
+                email=account["email"],
+                nome=account["nome"],
+                senha_hash=hash_password(account["senha"]),
+                tipo=account["tipo"],
+                ativo=True
+            )
+            
+            db.add(novo_usuario)
+            db.commit()
+            db.refresh(novo_usuario)
+            
+            logger.info(f"Conta criada: {novo_usuario.email} (tipo: {novo_usuario.tipo}, id: {novo_usuario.id})")
+            created_accounts.append({
+                "email": novo_usuario.email,
+                "tipo": novo_usuario.tipo,
+                "status": "created"
+            })
+        
+        return {
+            "success": True,
+            "message": f"Seed de contas de teste concluído",
+            "accounts": created_accounts
+        }
+        
+    except Exception as e:
+        logger.error(f"Erro ao fazer seed de contas: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
