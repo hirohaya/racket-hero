@@ -25,8 +25,8 @@ function EventDetails() {
   const [registering, setRegistering] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const [expandedPlayersSection, setExpandedPlayersSection] = useState(true);
-  const [expandedRankingSection, setExpandedRankingSection] = useState(true);
+  const [expandedPlayersSection, setExpandedPlayersSection] = useState(false);
+  const [expandedRankingSection, setExpandedRankingSection] = useState(false);
   const [showPlayerManagement, setShowPlayerManagement] = useState(false);
   const [isOrganizer, setIsOrganizer] = useState(false);
 
