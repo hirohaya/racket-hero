@@ -21,6 +21,9 @@ from apscheduler.triggers.cron import CronTrigger
 setup_logging(log_level=logging.INFO, log_dir='logs', json_format=True)
 log = get_logger("main")
 
+# Force rebuild timestamp
+print("[DEPLOY] 2025-01-09 13:46 - Racket Hero app started with all UI improvements")
+
 # Inicializar banco de dados na importação
 try:
     init_db()
