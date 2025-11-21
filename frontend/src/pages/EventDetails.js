@@ -39,6 +39,7 @@ function EventDetails() {
     }
   }, [eventId, user]);
 
+  // Carregamento completo - apenas na inicialização
   const loadEventDetails = async () => {
     try {
       setLoading(true);
@@ -72,6 +73,29 @@ function EventDetails() {
     }
   };
 
+  // Carregamento parcial - apenas jogadores e ranking (sem loading state)
+  const updatePlayersAndRanking = async () => {
+    try {
+      // Buscar jogadores inscritos
+      const playersData = await playersAPI.listEventPlayers(eventId);
+      setPlayers(playersData);
+      
+      // Buscar ranking
+      const rankingData = await rankingAPI.get(eventId);
+      setRanking(rankingData);
+      
+      // Atualizar contagem no evento
+      if (event) {
+        setEvent({...event});
+      }
+      
+      console.log('[EventDetails] Jogadores e ranking atualizados (silencioso)');
+    } catch (err) {
+      console.error('[EventDetails] Erro ao atualizar jogadores:', err);
+      // Não mostra erro para atualizações silenciosas
+    }
+  };
+
   const handleRegister = async () => {
     try {
       setRegistering(true);
@@ -84,8 +108,8 @@ function EventDetails() {
       setSuccess(result.message || 'Inscrição realizada com sucesso!');
       setIsRegistered(true);
       
-      // Recarregar lista de jogadores
-      await loadEventDetails();
+      // Atualizar apenas jogadores e ranking (sem loading)
+      await updatePlayersAndRanking();
       
       // Limpar mensagem após 3 segundos
       setTimeout(() => setSuccess(null), 3000);
@@ -113,8 +137,8 @@ function EventDetails() {
       setSuccess(result.message || 'Inscrição cancelada com sucesso!');
       setIsRegistered(false);
       
-      // Recarregar lista de jogadores
-      await loadEventDetails();
+      // Atualizar apenas jogadores e ranking (sem loading)
+      await updatePlayersAndRanking();
       
       // Limpar mensagem após 3 segundos
       setTimeout(() => setSuccess(null), 3000);
@@ -139,8 +163,8 @@ function EventDetails() {
       
       setSuccess(`Jogador '${playerName}' removido com sucesso!`);
       
-      // Recarregar lista de jogadores
-      await loadEventDetails();
+      // Atualizar apenas jogadores e ranking (sem loading)
+      await updatePlayersAndRanking();
       
       // Limpar mensagem após 3 segundos
       setTimeout(() => setSuccess(null), 3000);
@@ -335,7 +359,7 @@ function EventDetails() {
         eventId={eventId}
         isOpen={showPlayerManagement}
         onClose={() => setShowPlayerManagement(false)}
-        onPlayersUpdated={loadEventDetails}
+        onPlayersUpdated={updatePlayersAndRanking}
         isOrganizer={isOrganizer}
       />
 

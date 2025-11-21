@@ -83,16 +83,34 @@ function PlayerManagement({ eventId, isOpen, onClose, onPlayersUpdated, isOrgani
       setNewPlayerClub('');
       setNewPlayerElo('1600');
       
-      // Recarregar lista de jogadores e atualizar lista de IDs
+      // Fechar modal e atualizar lista (sem delay, atualização parcial)
+      onPlayersUpdated();
+      
+      // Limpar modal após atualização ser processada
       setTimeout(() => {
-        loadEventPlayers();
-        onPlayersUpdated();
         setSuccess(null);
-        setShowSearchMode(true); // Voltar para o modo de busca
+        setShowSearchMode(true);
+        onClose(); // Fechar modal após sucesso
       }, 1500);
     } catch (err) {
       console.error('[PlayerManagement] Erro ao adicionar jogador:', err);
-      setError(err.response?.data?.detail || err.message || 'Erro ao adicionar jogador');
+      
+      // Extrair mensagem de erro de forma segura
+      let errorMessage = 'Erro ao adicionar jogador';
+      if (err.response?.data?.detail) {
+        // Se é string, usar diretamente
+        if (typeof err.response.data.detail === 'string') {
+          errorMessage = err.response.data.detail;
+        } 
+        // Se é array de objetos (validation errors), extrair primeira mensagem
+        else if (Array.isArray(err.response.data.detail)) {
+          errorMessage = err.response.data.detail[0]?.msg || 'Erro ao adicionar jogador';
+        }
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -107,6 +125,7 @@ function PlayerManagement({ eventId, isOpen, onClose, onPlayersUpdated, isOrgani
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>➕ Adicionar Jogador</h2>
+          {loading && <div className="modal-loading-indicator"></div>}
           <button className="modal-close" onClick={onClose}>×</button>
         </div>
 
