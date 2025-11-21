@@ -223,6 +223,7 @@ async def search_usuarios(
         return [
             {
                 "id": u.id,
+                "usuario_id": u.id,
                 "nome": u.nome,
                 "email": u.email,
                 "tipo": u.tipo
