@@ -129,7 +129,7 @@ function MatchForm({
         <form onSubmit={handleSubmit} className="match-form">
           {/* Jogador 1 */}
           <div className="form-group">
-            <label htmlFor="player1Id">Jogador 1 (Branco)</label>
+            <label htmlFor="player1Id">Jogador 1</label>
             <select
               id="player1Id"
               name="player1Id"
@@ -150,7 +150,7 @@ function MatchForm({
 
           {/* Jogador 2 */}
           <div className="form-group">
-            <label htmlFor="player2Id">Jogador 2 (Preto)</label>
+            <label htmlFor="player2Id">Jogador 2</label>
             <select
               id="player2Id"
               name="player2Id"
@@ -182,12 +182,12 @@ function MatchForm({
               <option value="">Selecione o vencedor</option>
               {formData.player1Id && (
                 <option value={formData.player1Id}>
-                  {getPlayerName(formData.player1Id)} (Jogador 1)
+                  {getPlayerName(formData.player1Id)}
                 </option>
               )}
               {formData.player2Id && (
                 <option value={formData.player2Id}>
-                  {getPlayerName(formData.player2Id)} (Jogador 2)
+                  {getPlayerName(formData.player2Id)}
                 </option>
               )}
             </select>
