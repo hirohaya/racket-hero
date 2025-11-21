@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """
 Seed script para adicionar dados de teste ao Railway dev
-Executado automaticamente no startup via Procfile
+Executado apenas UMA VEZ na primeira inicialização
 Inclui: usuários de teste, eventos, e mapeamentos organizador-evento
 """
 
 import sys
+import os
 from pathlib import Path
 from datetime import datetime
 
@@ -14,6 +15,8 @@ sys.path.insert(0, str(backend_path))
 
 from database import SessionLocal, engine, Base
 from models import Usuario, Event, Player, EventoOrganizador
+
+SEED_FLAG_FILE = Path(__file__).parent / ".seed_initialized"
 
 def seed_dev_data():
     """Adiciona dados de teste ao banco de dados de dev"""
@@ -193,4 +196,18 @@ def seed_dev_data():
         session.close()
 
 if __name__ == "__main__":
-    seed_dev_data()
+    # Verificar se seed já foi executado
+    if SEED_FLAG_FILE.exists():
+        print("\n" + "="*70)
+        print("⏭️  Seed já foi executado anteriormente. Pulando...")
+        print("="*70 + "\n")
+        sys.exit(0)
+    
+    # Executar seed
+    if seed_dev_data():
+        # Criar arquivo de flag para não executar seed novamente
+        SEED_FLAG_FILE.touch()
+        print("\n✅ Flag criada: seed não será executado novamente neste container")
+    else:
+        print("\n❌ Seed falhou")
+        sys.exit(1)
