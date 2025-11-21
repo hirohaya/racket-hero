@@ -10,6 +10,7 @@
  */
 
 import React, { useState } from 'react';
+import matchesAPI from '../services/matches';
 import MatchForm from './MatchForm';
 import './EventMatchesCard.css';
 
@@ -26,6 +27,7 @@ function EventMatchesCard({
 }) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedMatch, setSelectedMatch] = useState(null);
+  const [formLoading, setFormLoading] = useState(false);
 
   const handleCreateMatch = () => {
     if (players.length < 2) {
@@ -42,17 +44,54 @@ function EventMatchesCard({
   };
 
   const handleFormSubmit = async (matchData) => {
-    if (onMatchUpdated) {
-      await onMatchUpdated(matchData);
+    try {
+      setFormLoading(true);
+
+      // Se é edição (selectedMatch existe)
+      if (selectedMatch) {
+        console.log('[EventMatchesCard] Atualizando partida:', selectedMatch.id, matchData);
+        await matchesAPI.updateMatch(selectedMatch.id, matchData.winner_id);
+        if (onMatchUpdated) {
+          await onMatchUpdated(matchData);
+        }
+      } else {
+        // Se é criação (selectedMatch é null)
+        console.log('[EventMatchesCard] Criando nova partida:', matchData);
+        await matchesAPI.createMatch(
+          matchData.event_id,
+          matchData.player_1_id,
+          matchData.player_2_id,
+          matchData.winner_id
+        );
+        if (onMatchCreated) {
+          await onMatchCreated(matchData);
+        }
+      }
+      
+      setIsFormOpen(false);
+      setSelectedMatch(null);
+    } catch (err) {
+      console.error('[EventMatchesCard] Erro ao salvar partida:', err);
+      alert('Erro ao salvar partida. Tente novamente.');
+    } finally {
+      setFormLoading(false);
     }
-    setIsFormOpen(false);
-    setSelectedMatch(null);
   };
 
-  const handleDeleteMatch = (matchId) => {
+  const handleDeleteMatch = async (matchId) => {
     if (window.confirm('Tem certeza que deseja deletar esta partida?')) {
-      if (onMatchDeleted) {
-        onMatchDeleted(matchId);
+      try {
+        setFormLoading(true);
+        console.log('[EventMatchesCard] Deletando partida:', matchId);
+        await matchesAPI.deleteMatch(matchId);
+        if (onMatchDeleted) {
+          await onMatchDeleted(matchId);
+        }
+      } catch (err) {
+        console.error('[EventMatchesCard] Erro ao deletar partida:', err);
+        alert('Erro ao deletar partida. Tente novamente.');
+      } finally {
+        setFormLoading(false);
       }
     }
   };
@@ -162,7 +201,7 @@ function EventMatchesCard({
           setIsFormOpen(false);
           setSelectedMatch(null);
         }}
-        isLoading={isLoading}
+        isLoading={formLoading}
       />
     </div>
   );
