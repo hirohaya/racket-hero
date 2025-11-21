@@ -360,7 +360,6 @@ function EventDetails() {
                   <tr>
                     <th>Nome</th>
                     <th>Clube</th>
-                    <th>Pontuação</th>
                     {isOrganizer && <th>Ações</th>}
                   </tr>
                 </thead>
@@ -374,7 +373,6 @@ function EventDetails() {
                         )}
                       </td>
                       <td>{player.club || '-'}</td>
-                      <td>{player.initial_elo.toFixed(1)}</td>
                       {isOrganizer && (
                         <td className="action-cell">
                           <button
@@ -382,7 +380,7 @@ function EventDetails() {
                             onClick={() => handleRemovePlayer(player.id, player.name)}
                             title="Remover jogador"
                           >
-                            ✕
+                            Remover
                           </button>
                         </td>
                       )}
