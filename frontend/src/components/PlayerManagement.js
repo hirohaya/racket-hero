@@ -94,7 +94,23 @@ function PlayerManagement({ eventId, isOpen, onClose, onPlayersUpdated, isOrgani
       }, 1500);
     } catch (err) {
       console.error('[PlayerManagement] Erro ao adicionar jogador:', err);
-      setError(err.response?.data?.detail || err.message || 'Erro ao adicionar jogador');
+      
+      // Extrair mensagem de erro de forma segura
+      let errorMessage = 'Erro ao adicionar jogador';
+      if (err.response?.data?.detail) {
+        // Se é string, usar diretamente
+        if (typeof err.response.data.detail === 'string') {
+          errorMessage = err.response.data.detail;
+        } 
+        // Se é array de objetos (validation errors), extrair primeira mensagem
+        else if (Array.isArray(err.response.data.detail)) {
+          errorMessage = err.response.data.detail[0]?.msg || 'Erro ao adicionar jogador';
+        }
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
