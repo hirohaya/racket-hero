@@ -76,7 +76,7 @@
   border: 2px solid #e0e0e0;
   border-radius: 0.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  max-height: 500px;
+  max-height: 700px;
   overflow-y: auto;
   z-index: 1000;
   animation: slideDown 0.2s ease;
@@ -237,7 +237,7 @@
 /* Responsividade */
 @media (max-width: 768px) {
   .search-results {
-    max-height: 300px;
+    max-height: 400px;
   }
 
   .result-email,
