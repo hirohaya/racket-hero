@@ -19,8 +19,8 @@ class Event(Base):
     __tablename__ = "event"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
-    date = Column(String)  # YYYY-MM-DD format
-    time = Column(String)  # HH:MM format
+    name = Column(String, index=True, nullable=False)
+    date = Column(String, nullable=False)  # YYYY-MM-DD format
+    time = Column(String, nullable=False)  # HH:MM format
     usuario_id = Column(Integer, ForeignKey("usuarios.id"), index=True, nullable=True)
     active = Column(Boolean, default=True)
