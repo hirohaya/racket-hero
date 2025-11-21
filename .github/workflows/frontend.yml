@@ -47,11 +47,12 @@ jobs:
     
     - name: Upload build
       uses: actions/upload-artifact@v4
-      if: success()
+      if: always()
       with:
-        name: frontend-build
-        path: frontend/build/
+        name: frontend-build-node-${{ matrix.node-version }}
+        path: frontend/build
         retention-days: 5
+        if-no-files-found: ignore
 
   lint:
     runs-on: ubuntu-latest
