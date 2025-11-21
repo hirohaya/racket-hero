@@ -31,7 +31,8 @@ function PlayerManagement({ eventId, isOpen, onClose, onPlayersUpdated, isOrgani
     try {
       const players = await playersAPI.listEventPlayers(eventId);
       setEventPlayers(players);
-      setPlayerIds(players.map(p => p.id || p.user_id));
+      // Usar usuario_id para excluir da busca (identificador único do usuário)
+      setPlayerIds(players.map(p => p.usuario_id).filter(id => id !== null));
     } catch (err) {
       console.error('[PlayerManagement] Erro ao carregar jogadores:', err);
     }
