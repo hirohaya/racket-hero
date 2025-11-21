@@ -4,7 +4,7 @@
  * Inclui busca dinâmica de jogadores cadastrados
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import playersAPI from '../services/players';
 import PlayerSearchForm from './PlayerSearchForm';
 import '../styles/PlayerManagement.css';
@@ -17,26 +17,24 @@ function PlayerManagement({ eventId, isOpen, onClose, onPlayersUpdated, isOrgani
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [showSearchMode, setShowSearchMode] = useState(true);
-  const [eventPlayers, setEventPlayers] = useState([]);
   const [playerIds, setPlayerIds] = useState([]);
 
   // Carregar jogadores do evento ao abrir o modal
-  useEffect(() => {
-    if (isOpen) {
-      loadEventPlayers();
-    }
-  }, [isOpen, eventId]);
-
-  const loadEventPlayers = async () => {
+  const loadEventPlayers = useCallback(async () => {
     try {
       const players = await playersAPI.listEventPlayers(eventId);
-      setEventPlayers(players);
       // Usar usuario_id para excluir da busca (identificador único do usuário)
       setPlayerIds(players.map(p => p.usuario_id).filter(id => id !== null));
     } catch (err) {
       console.error('[PlayerManagement] Erro ao carregar jogadores:', err);
     }
-  };
+  }, [eventId]);
+
+  useEffect(() => {
+    if (isOpen) {
+      loadEventPlayers();
+    }
+  }, [isOpen, eventId, loadEventPlayers]);
 
   const handleSelectFromSearch = async (user) => {
     // Auto-preencher o formulário com o jogador selecionado

@@ -3,7 +3,7 @@
  * Formulario para editar evento existente
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import eventsAPI from '../services/events';
 import './CreateEvent.css';
@@ -22,11 +22,7 @@ function EditEvent() {
   const [errors, setErrors] = useState({});
 
   // Carregar evento ao montar
-  useEffect(() => {
-    loadEvent();
-  }, [eventId]);
-
-  const loadEvent = async () => {
+  const loadEvent = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -43,7 +39,11 @@ function EditEvent() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [eventId]);
+
+  useEffect(() => {
+    loadEvent();
+  }, [eventId, loadEvent]);
 
   // Validar formulario
   const validate = () => {

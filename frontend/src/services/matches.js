@@ -105,4 +105,5 @@ class MatchesAPI {
 }
 
 // Exportar instância singleton
-export default new MatchesAPI();
+const matchesAPI = new MatchesAPI();
+export default matchesAPI;

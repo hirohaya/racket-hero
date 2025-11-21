@@ -9,7 +9,7 @@
  * - Botão para criar nova partida
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import MatchForm from '../components/MatchForm';
 import EventsAPI from '../services/events';
@@ -31,11 +31,7 @@ function EventMatches() {
   const [error, setError] = useState(null);
 
   // Carregar dados iniciais
-  useEffect(() => {
-    loadEventData();
-  }, [eventId]);
-
-  const loadEventData = async () => {
+  const loadEventData = useCallback(async () => {
     try {
       setError(null);
       setIsLoading(true);
@@ -57,7 +53,11 @@ function EventMatches() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [eventId]);
+
+  useEffect(() => {
+    loadEventData();
+  }, [eventId, loadEventData]);
 
   const handleCreateMatch = () => {
     if (players.length < 2) {

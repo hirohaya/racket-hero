@@ -3,7 +3,7 @@
  * Mostra informações do evento e permite inscrição
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import eventsAPI from '../services/events';
@@ -31,16 +31,7 @@ function EventDetails() {
   const [isOrganizer, setIsOrganizer] = useState(false);
 
   // Carregar detalhes do evento e lista de jogadores
-  useEffect(() => {
-    loadEventDetails();
-    // Verificar se usuário é organizador
-    if (user) {
-      setIsOrganizer(user.tipo === 'organizador' || user.tipo === 'admin');
-    }
-  }, [eventId, user]);
-
-  // Carregamento completo - apenas na inicialização
-  const loadEventDetails = async () => {
+  const loadEventDetails = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -71,7 +62,15 @@ function EventDetails() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [eventId, user]);
+
+  useEffect(() => {
+    loadEventDetails();
+    // Verificar se usuário é organizador
+    if (user) {
+      setIsOrganizer(user.tipo === 'organizador' || user.tipo === 'admin');
+    }
+  }, [eventId, user, loadEventDetails]);
 
   // Carregamento parcial - apenas jogadores e ranking (sem loading state)
   const updatePlayersAndRanking = async () => {
