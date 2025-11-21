@@ -51,6 +51,7 @@ def init_db():
     from models.event import Event  # noqa
     from models.player import Player  # noqa
     from models.match import Match  # noqa
+    from models.evento_organizador import EventoOrganizador  # noqa
     
     Base.metadata.create_all(bind=engine)
     
@@ -139,6 +140,27 @@ def _seed_test_data_if_empty():
                 print("[DEBUG] Event criado")
             else:
                 print("[DEBUG] Torneio Teste já existe")
+            
+            # Ensure Organizador is linked to Event in evento_organizador table
+            if organizador and evento:
+                from models.evento_organizador import EventoOrganizador
+                
+                organizador_link = db.query(EventoOrganizador).filter(
+                    EventoOrganizador.event_id == evento.id,
+                    EventoOrganizador.usuario_id == organizador.id
+                ).first()
+                
+                if not organizador_link:
+                    print("[DEBUG] Adicionando Organizador como gerenciador do evento...")
+                    org_link = EventoOrganizador(
+                        event_id=evento.id,
+                        usuario_id=organizador.id,
+                        é_criador=1  # Mark as creator
+                    )
+                    db.add(org_link)
+                    print("[DEBUG] Organizador linkado ao evento")
+                else:
+                    print("[DEBUG] Organizador já é gerenciador do evento")
             
             # Ensure test jogador is in the event
             if organizador and evento:
