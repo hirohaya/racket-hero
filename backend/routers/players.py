@@ -3,7 +3,7 @@ players.py - Router para gerenciar jogadores
 """
 
 from fastapi import APIRouter, HTTPException, Depends
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 from database import SessionLocal
 from models import Player
@@ -19,7 +19,7 @@ router = APIRouter()
 class AddPlayerRequest(BaseModel):
     """Schema para adicionar jogador a um evento"""
     name: str
-    club: str = None
+    club: Optional[str] = None
     initial_elo: float = 1600.0
 
 @router.post("", response_model=dict, status_code=201)
