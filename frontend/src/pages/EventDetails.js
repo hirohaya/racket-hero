@@ -9,7 +9,10 @@ import { useAuth } from '../context/AuthContext';
 import eventsAPI from '../services/events';
 import playersAPI from '../services/players';
 import rankingAPI from '../services/ranking';
+import matchesAPI from '../services/matches';
 import PlayerManagement from '../components/PlayerManagement';
+import SidebarMenu from '../components/SidebarMenu';
+import EventMatchesCard from '../components/EventMatchesCard';
 import './EventDetails.css';
 
 function EventDetails() {
@@ -20,6 +23,7 @@ function EventDetails() {
   const [event, setEvent] = useState(null);
   const [players, setPlayers] = useState([]);
   const [ranking, setRanking] = useState([]);
+  const [matches, setMatches] = useState([]);
   const [isRegistered, setIsRegistered] = useState(false);
   const [loading, setLoading] = useState(true);
   const [registering, setRegistering] = useState(false);
@@ -47,6 +51,10 @@ function EventDetails() {
       // Buscar ranking
       const rankingData = await rankingAPI.get(eventId);
       setRanking(rankingData);
+      
+      // Buscar partidas
+      const matchesData = await matchesAPI.getMatches(eventId);
+      setMatches(matchesData);
       
       // Verificar se usuário já está registrado
       if (user && playersData.some(p => p.usuario_id === user.id)) {
@@ -82,6 +90,10 @@ function EventDetails() {
       // Buscar ranking
       const rankingData = await rankingAPI.get(eventId);
       setRanking(rankingData);
+      
+      // Buscar partidas
+      const matchesData = await matchesAPI.getMatches(eventId);
+      setMatches(matchesData);
       
       // Atualizar contagem no evento
       if (event) {
@@ -188,6 +200,25 @@ function EventDetails() {
     return ranking.length > 0 ? ranking : [...players].sort((a, b) => b.initial_elo - a.initial_elo);
   };
 
+  const handleSidebarNavigation = (page) => {
+    if (page === 'players') {
+      const element = document.querySelector('.players-section');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else if (page === 'matches') {
+      const element = document.querySelector('.matches-card');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else if (page === 'event') {
+      const element = document.querySelector('.event-card');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="event-details-container">
@@ -210,7 +241,18 @@ function EventDetails() {
   }
 
   return (
-    <div className="event-details-container">
+    <div className="event-details-wrapper">
+      {/* Barra de Menu Lateral */}
+      <SidebarMenu
+        eventId={eventId}
+        currentPage="players"
+        onNavigate={handleSidebarNavigation}
+        isOrganizer={isOrganizer}
+        user={user}
+      />
+
+      {/* Conteúdo Principal */}
+      <div className="event-details-container">
       {/* Alertas */}
       {error && (
         <div className="alert alert-error">
@@ -417,14 +459,18 @@ function EventDetails() {
         )}
       </div>
 
-      {/* Link para Partidas */}
-      <div className="matches-link-section">
-        <button
-          onClick={() => navigate(`/evento/${eventId}/partidas`)}
-          className="btn-matches"
-        >
-          🏓 Ver Partidas
-        </button>
+      {/* Card de Partidas */}
+      <EventMatchesCard
+        eventId={eventId}
+        matches={matches}
+        players={players}
+        isOrganizer={isOrganizer}
+        onMatchCreated={updatePlayersAndRanking}
+        onMatchUpdated={updatePlayersAndRanking}
+        onMatchDeleted={updatePlayersAndRanking}
+        isLoading={false}
+        error={null}
+      />
       </div>
     </div>
   );

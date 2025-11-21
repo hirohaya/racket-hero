@@ -2,10 +2,18 @@
  * Estilos para a página de Detalhes do Evento
  */
 
+.event-details-wrapper {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f5f6fa;
+}
+
 .event-details-container {
+  flex: 1;
   max-width: 900px;
   margin: 0 auto;
   padding: 20px;
+  width: 100%;
 }
 
 .back-btn {
@@ -339,25 +347,25 @@
   background-color: #e74c3c;
   color: white;
   border: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+  padding: 8px 16px;
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 16px;
-  display: flex;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
-  padding: 0;
 }
 
 .btn-remove-player:hover {
   background-color: #c0392b;
-  transform: scale(1.1);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .btn-remove-player:active {
-  transform: scale(0.95);
+  transform: translateY(0);
 }
 
 /* Célula de Ação na Tabela */
@@ -504,65 +512,28 @@
   font-size: 16px;
 }
 
-/* Matches Link Section */
-.matches-link-section {
-  margin-top: 10px;
-  padding: 15px;
-  background-color: #f5f6fa;
-  border-radius: 8px;
+.loading-full {
   text-align: center;
-  border-left: 4px solid #3498db;
-}
-
-.btn-matches {
-  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-  color: white;
-  border: none;
-  padding: 12px 28px;
-  border-radius: 6px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(52, 152, 219, 0.3);
-  display: inline-block;
-}
-
-.btn-matches:hover {
-  background: linear-gradient(135deg, #2980b9 0%, #1f618d 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(52, 152, 219, 0.4);
-}
-
-.btn-matches:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3);
-}
-
-.btn-matches:disabled {
-  background: linear-gradient(135deg, #bdc3c7 0%, #95a5a6 100%);
-  cursor: not-allowed;
-  box-shadow: none;
-  transform: none;
+  padding: 40px;
+  color: #7f8c8d;
+  font-size: 16px;
+  grid-column: 1 / -1;
 }
 
 /* Responsivo */
 @media (max-width: 768px) {
+  .event-details-wrapper {
+    flex-direction: column;
+  }
+
+  .event-details-container {
+    padding: 15px;
+  }
+
   .event-header {
     flex-direction: column;
     gap: 15px;
     align-items: flex-start;
-  }
-  
-  .matches-link-section {
-    margin-top: 25px;
-    padding: 20px;
-  }
-  
-  .btn-matches {
-    font-size: 14px;
-    padding: 12px 24px;
-    width: 100%;
   }
 
   .event-header h1 {
