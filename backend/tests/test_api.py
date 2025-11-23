@@ -379,7 +379,7 @@ class TestRankingRouter:
         
         # Obter ranking
         response = client.get(
-            f"/api/ranking/eventos/{event_id}/ranking",
+            f"/api/ranking/{event_id}",
             headers={"Authorization": f"Bearer {test_admin_token}"}
         )
         assert response.status_code == 200
