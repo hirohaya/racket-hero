@@ -105,6 +105,153 @@ async def create_tables():
             "status": "error",
             "message": f"Erro ao criar tabelas: {str(e)}"
         }
+
+# Endpoint para seed de dados de teste
+@app.post("/admin/seed-test-data", tags=["Admin"])
+async def seed_test_data(db: Session = Depends(get_db)):
+    """Adicionar contas de teste ao banco de dados (ADMIN ONLY)"""
+    try:
+        from models.usuario import Usuario, TipoUsuario
+        from models.event import Event
+        from models.player import Player
+        from models.evento_organizador import EventoOrganizador
+        from utils.security import hash_password
+        
+        log.info("[SEED] Iniciando seed de dados de teste...")
+        
+        # Verificar se já existe organizador
+        organizador = db.query(Usuario).filter(
+            Usuario.email == "organizador@test.com"
+        ).first()
+        
+        if not organizador:
+            log.info("[SEED] Criando usuário ORGANIZADOR...")
+            organizador = Usuario(
+                email="organizador@test.com",
+                nome="Organizador Teste",
+                senha_hash=hash_password("Senha123!"),
+                tipo=TipoUsuario.ORGANIZADOR,
+                ativo=True
+            )
+            db.add(organizador)
+            db.flush()
+            log.info("[SEED] ✓ Organizador criado")
+        else:
+            log.info("[SEED] Organizador já existe")
+        
+        # Criar evento de teste
+        evento = db.query(Event).filter(Event.name == "Torneio Teste").first()
+        if not evento:
+            log.info("[SEED] Criando evento TORNEIO TESTE...")
+            evento = Event(
+                name="Torneio Teste",
+                date="2025-12-01",
+                time="14:00",
+                active=True,
+                usuario_id=organizador.id
+            )
+            db.add(evento)
+            db.flush()
+            log.info("[SEED] ✓ Evento criado")
+        else:
+            log.info("[SEED] Evento já existe")
+        
+        # Vincular organizador ao evento
+        if evento and organizador:
+            org_link = db.query(EventoOrganizador).filter(
+                EventoOrganizador.event_id == evento.id,
+                EventoOrganizador.usuario_id == organizador.id
+            ).first()
+            
+            if not org_link:
+                log.info("[SEED] Vinculando organizador ao evento...")
+                org_link = EventoOrganizador(
+                    event_id=evento.id,
+                    usuario_id=organizador.id,
+                    é_criador=1
+                )
+                db.add(org_link)
+                db.flush()
+                log.info("[SEED] ✓ Organizador vinculado")
+        
+        # Criar usuários jogadores
+        test_accounts = [
+            ("Jogador Teste", "jogador@test.com"),
+            ("João Silva", "joao.silva@example.com"),
+            ("Maria Santos", "maria.santos@example.com"),
+            ("Pedro Oliveira", "pedro.oliveira@example.com"),
+            ("Ana Costa", "ana.costa@example.com"),
+            ("Lucas Ferreira", "lucas.ferreira@example.com"),
+            ("Patricia Alves", "patricia.alves@example.com"),
+            ("Roberto Gomes", "roberto.gomes@example.com"),
+            ("Juliana Rocha", "juliana.rocha@example.com"),
+            ("Bruno Martins", "bruno.martins@example.com"),
+            ("Camila Ribeiro", "camila.ribeiro@example.com"),
+        ]
+        
+        created_users = []
+        log.info(f"[SEED] Criando {len(test_accounts)} usuários jogadores...")
+        
+        for nome, email in test_accounts:
+            existing_user = db.query(Usuario).filter(Usuario.email == email).first()
+            if not existing_user:
+                new_user = Usuario(
+                    email=email,
+                    nome=nome,
+                    senha_hash=hash_password("Senha123!"),
+                    tipo=TipoUsuario.JOGADOR,
+                    ativo=True
+                )
+                db.add(new_user)
+                db.flush()
+                created_users.append(nome)
+                log.info(f"[SEED] ✓ {nome}")
+            else:
+                log.info(f"[SEED] {nome} já existe")
+        
+        # Adicionar jogadores ao evento
+        if evento:
+            log.info("[SEED] Adicionando jogadores ao evento...")
+            for nome, email in test_accounts:
+                user = db.query(Usuario).filter(Usuario.email == email).first()
+                existing_player = db.query(Player).filter(
+                    Player.event_id == evento.id,
+                    Player.name == nome
+                ).first()
+                
+                if not existing_player and user:
+                    player = Player(
+                        usuario_id=user.id,
+                        event_id=evento.id,
+                        name=nome,
+                        initial_elo=1600
+                    )
+                    db.add(player)
+                    db.flush()
+                    log.info(f"[SEED] ✓ {nome} adicionado ao evento")
+        
+        db.commit()
+        
+        log.info("[SEED] Seed concluído com sucesso!")
+        
+        return {
+            "status": "success",
+            "message": "Dados de teste inseridos com sucesso",
+            "created_users": created_users,
+            "total_users": len(test_accounts),
+            "event": {
+                "id": evento.id,
+                "name": evento.name,
+                "date": evento.date
+            }
+        }
+    except Exception as e:
+        db.rollback()
+        log.error(f"[SEED] Erro ao seed: {e}", exc_info=True)
+        return {
+            "status": "error",
+            "message": f"Erro ao adicionar dados de teste: {str(e)}"
+        }
     
     return {
         "status": "ok" if db_status == "ok" else "degraded",
