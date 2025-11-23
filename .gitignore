@@ -146,52 +146,191 @@ desktop.ini
 .Trashes
 
 # ============================================================================
-# Documentation (Local Reference - NOT Versioned)
+# KEEP IN GIT (Critical for Production)
 # ============================================================================
 
-# All documentation files are local-only, kept in docs/ for reference
-# but not tracked in git to keep repository clean
-docs/**
-!docs/README.md
-!docs/DEVELOPMENT_GUIDE.md
-!docs/DEPLOYMENT.md
-
-# ============================================================================
-# Debug & Helper Scripts (Local Use Only - NOT Versioned)
-# ============================================================================
-
-# Debug scripts for database manipulation, testing, and local development
-# These are NOT essential for production operation
-scripts/debug_*.py
-scripts/test_*.py
-scripts/verify_*.py
-scripts/*.playwrite
-scripts/*.playwright
-
-# Examples:
-# - scripts/debug_database.py (local DB inspection)
-# - scripts/test_accounts.py (local account testing)
-# - scripts/verify_dependencies.py (local dependency checks)
-# - scripts/test_accounts_playwright.py (local UI testing)
-
-# ============================================================================
-# KEEP IN GIT (Important!)
-# ============================================================================
-
-# Configuration examples (KEEP - for setup)
-!.env.example
-!.env.*.example
-
-# GitHub Actions (KEEP - CI/CD)
+# GitHub Actions & CI/CD
 !.github/
 !.github/**
 
-# Tests (KEEP - essential)
+# Tests (essential for quality)
 !backend/tests/
 !backend/tests/**
 !frontend/src/__tests__/
 !frontend/src/__tests__/**
 
-# Shared utilities (KEEP - needed for development)
+# Scripts folder (migration & setup scripts)
 !scripts/
 !scripts/**
+
+# Guides & Documentation folders (important for setup)
+!guides/
+!guides/**
+!deployment/
+!deployment/**
+!docs/
+!docs/**
+
+# Configuration examples (needed for setup)
+!.env.example
+!.env.*.example
+
+# ============================================================================
+# Debug & Local-Only Scripts (NOT Versioned - Remove in Production)
+# ============================================================================
+
+# Debug scripts for local development only (not needed in production)
+scripts/debug_*.py
+scripts/verify_*.py
+scripts/__pycache__/
+scripts/*.log
+scripts/*.tmp
+
+# Test artifacts from local testing
+scripts/test_output.txt
+scripts/*.playwrite
+scripts/*.playwright
+
+# ============================================================================
+# Build & Deployment Artifacts (Generated - NOT Versioned)
+# ============================================================================
+
+# Docker build outputs
+.docker/
+docker-compose.override.yml
+
+# Environment-specific overrides (local development)
+.env.*.local
+.env.development.local
+.env.staging.local
+.env.test.local
+
+# Railway-specific local configs
+railway.toml.local
+
+# ============================================================================
+# Package Manager Artifacts
+# ============================================================================
+
+# npm/yarn lock files should be versioned, but ignore:
+frontend/yarn-error.log
+frontend/npm-debug.log*
+
+# Package manager caches
+.npm
+.yarn/cache
+.yarn/install-state.gz
+
+# ============================================================================
+# Test Coverage & Reports (Generated - NOT Versioned)
+# ============================================================================
+
+# Coverage reports
+coverage/
+*.lcov
+.nyc_output/
+
+# Test reports
+test-results/
+junit.xml
+xunit.xml
+
+# ============================================================================
+# IDE & Editor Settings (Local Preferences - NOT Versioned)
+# ============================================================================
+
+# VS Code
+.vscode/*
+!.vscode/extensions.json
+
+# JetBrains IDEs
+.idea/*
+!.idea/codeStyles/
+*.iml
+*.iws
+*.ipr
+
+# Sublime
+*.sublime-workspace
+*.sublime-project
+
+# Vim
+.vim/
+
+# ============================================================================
+# Temporary & Playground Files (Local Development Only)
+# ============================================================================
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*~
+.tmp/
+
+# Test databases (local)
+test.db
+test.sqlite3
+
+# Playground/experimental code
+playground/
+experiments/
+*.test.local.js
+*.test.local.py
+
+# Backup of database files
+*.db.backup
+*.sqlite.backup
+backup_*.db
+
+# ============================================================================
+# OS-Specific Files (NOT Versioned)
+# ============================================================================
+
+# Windows
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
+
+# Linux
+.directory
+.Trash-*/
+
+# ============================================================================
+# Python-Specific (Additional)
+# ============================================================================
+
+# Virtual environments (all variants)
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# Python build artifacts
+*.egg-info/
+.eggs/
+
+# Python cache
+*.py[cod]
+*$py.class
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+
+# ============================================================================
+# Node-Specific (Additional)
+# ============================================================================
+
+# Next.js
+.next/
+out/
+.nuxt/
+
+# Build outputs
+dist/
+build/
