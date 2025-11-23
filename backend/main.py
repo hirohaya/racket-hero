@@ -77,6 +77,34 @@ async def health_check_db(db: Session = Depends(get_db)):
         db_status = "error"
         db_message = f"Database connection failed: {str(e)}"
         log.error(f"Health check DB error: {e}", exc_info=True)
+
+# Endpoint para criar tabelas (para debug/setup)
+@app.post("/admin/create-tables", tags=["Admin"])
+async def create_tables():
+    """Criar tabelas no banco de dados (ADMIN ONLY - para setup)"""
+    try:
+        from database import Base
+        Base.metadata.create_all(bind=engine)
+        
+        # Verificar quais tabelas foram criadas
+        from sqlalchemy import inspect
+        inspector = inspect(engine)
+        tables = inspector.get_table_names()
+        
+        log.info(f"Tabelas criadas: {tables}")
+        
+        return {
+            "status": "success",
+            "message": f"Tabelas criadas com sucesso",
+            "tables": tables,
+            "count": len(tables)
+        }
+    except Exception as e:
+        log.error(f"Erro ao criar tabelas: {e}", exc_info=True)
+        return {
+            "status": "error",
+            "message": f"Erro ao criar tabelas: {str(e)}"
+        }
     
     return {
         "status": "ok" if db_status == "ok" else "degraded",
