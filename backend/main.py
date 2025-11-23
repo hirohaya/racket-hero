@@ -52,32 +52,6 @@ try:
 except Exception as e:
     log.error(f"Erro ao configurar CORS: {e}")
 
-# Health check endpoint
-@app.get("/health", tags=["System"])
-async def health_check():
-    """Verificar saúde da API"""
-    return {
-        "status": "ok",
-        "message": "Racket Hero API is running",
-        "version": "1.0.0",
-        "timestamp": datetime.now(timezone.utc).isoformat()
-    }
-
-# Database health check endpoint
-@app.get("/health/db", tags=["System"])
-async def health_check_db(db: Session = Depends(get_db)):
-    """Verificar saúde da API e do banco de dados"""
-    try:
-        # Testar conexão com o banco
-        from sqlalchemy import text
-        db.execute(text("SELECT 1"))
-        db_status = "ok"
-        db_message = "Database connection successful"
-    except Exception as e:
-        db_status = "error"
-        db_message = f"Database connection failed: {str(e)}"
-        log.error(f"Health check DB error: {e}", exc_info=True)
-
 # Endpoint para criar tabelas (para debug/setup)
 @app.post("/admin/create-tables", tags=["Admin"])
 async def create_tables():
