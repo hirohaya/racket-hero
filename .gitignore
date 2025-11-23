@@ -159,41 +159,23 @@ desktop.ini
 !frontend/src/__tests__/
 !frontend/src/__tests__/**
 
-# Scripts folder (migration & setup scripts)
-!scripts/
-!scripts/**
-
-# Guides & Documentation folders (important for setup)
-!guides/
-!guides/**
-!deployment/
-!deployment/**
-!docs/
-!docs/**
-
 # Configuration examples (needed for setup)
 !.env.example
 !.env.*.example
 
 # ============================================================================
-# Debug & Local-Only Scripts (NOT Versioned - Remove in Production)
+# Development Folders (Local Only - NOT Versioned)
 # ============================================================================
 
-# Debug scripts for local development only (not needed in production)
-scripts/debug_*.py
-scripts/verify_*.py
-scripts/__pycache__/
-scripts/*.log
-scripts/*.tmp
+# Documentation files (local reference only)
+docs/
+guides/
 
-# Test artifacts from local testing
-scripts/test_output.txt
-scripts/*.playwrite
-scripts/*.playwright
+# Scripts (all development/testing utilities, not needed in production)
+scripts/
 
-# ============================================================================
-# Build & Deployment Artifacts (Generated - NOT Versioned)
-# ============================================================================
+# Deployment guides (reference only, managed via CI/CD)
+deployment/
 
 # Docker build outputs
 .docker/
