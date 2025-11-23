@@ -2,24 +2,37 @@
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
-from sqlalchemy.pool import StaticPool
+from sqlalchemy.pool import StaticPool, NullPool
 import os
 
 # Obter URL do banco de dados das variáveis de ambiente
+# Railway fornece DATABASE_URL automaticamente para PostgreSQL
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./racket_hero.db")
 
-# Criar engine
-# Para SQLite :memory:, usar StaticPool para garantir mesma conexão
+# Determinar se é PostgreSQL ou SQLite
+is_postgres = DATABASE_URL.startswith("postgresql://") or DATABASE_URL.startswith("postgres://")
+
+# Criar engine com configurações apropriadas
 if DATABASE_URL == "sqlite:///:memory:":
+    # SQLite em memória para testes
     engine = create_engine(
         DATABASE_URL,
         connect_args={"check_same_thread": False},
-        poolclass=StaticPool  # Usar mesmo banco para todas as conexões
+        poolclass=StaticPool
     )
-else:
+elif is_postgres:
+    # PostgreSQL em produção (Railway)
+    # Usar NullPool para evitar problemas de conexão
     engine = create_engine(
         DATABASE_URL,
-        connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
+        poolclass=NullPool,
+        echo=False
+    )
+else:
+    # SQLite local para desenvolvimento
+    engine = create_engine(
+        DATABASE_URL,
+        connect_args={"check_same_thread": False}
     )
 
 # Criar session factory

@@ -27,9 +27,10 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Instalar dependências do sistema
+# Instalar dependências do sistema (incluindo PostgreSQL client)
 RUN apt-get update && apt-get install -y \
     gcc \
+    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 # Copiar requirements.txt
@@ -57,7 +58,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
 # Variáveis de ambiente padrão
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    DATABASE_URL=sqlite:///./racket_hero.db \
+    DATABASE_URL=postgresql://user:password@localhost/racket_hero \
     CORS_ORIGINS=http://localhost:3000,http://localhost:8000 \
     LOG_LEVEL=info
 

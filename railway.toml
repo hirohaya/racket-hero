@@ -32,6 +32,21 @@ initialDelaySeconds = 10
 intervalSeconds = 30
 timeoutSeconds = 5
 
+# Variáveis de ambiente do backend
+[services.variables]
+DATABASE_URL = "${{ database.DATABASE_URL }}"
+LOG_LEVEL = "info"
+
+[[services]]
+name = "database"
+service = "postgresql"
+
+# Configurações do PostgreSQL
+[services.variables]
+POSTGRES_DB = "racket_hero"
+POSTGRES_USER = "railway"
+POSTGRES_PASSWORD = "changeme"
+
 [[services]]
 name = "frontend"
 startCommand = "npm start"
@@ -48,3 +63,9 @@ endpoint = "/"
 initialDelaySeconds = 15
 intervalSeconds = 30
 timeoutSeconds = 5
+
+# Variáveis de ambiente do frontend
+[services.variables]
+REACT_APP_API_URL = "/api"
+NODE_ENV = "production"
+
